@@ -58,7 +58,7 @@ class Student(User):
             conn.commit()
             result = {"status": "Success", "message": "Student added successfully"}
         except Exception as e:
-            result = {"status": "Error", "message": str(e)}, 500
+                result = {"status": "Error", "message": str(e)}
         finally:
             cursor.close()
             conn.close()
@@ -76,25 +76,53 @@ class Student(User):
         return result is not None
 
 class FacultyMember(User):
+    def __init__(self,db,firstName,lastName,email,mobileNo,yearOfStudy,degreeName):
+        self.db = db
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.mobileNo = mobileNo
+
+
     def adduser(self):
-        if request.method == 'POST':
-            self.firstName = request.form['firstName']
-            self.lastName = request.form['lastName']
-            self.email = request.form['email']
-            self.mobileNo = request.form['mobileNo']
-            self.role = request.form['role']
-            return f"Faculty {self.firstName} {self.lastName} added"
-        return "Invalid request"
+        pass
 
 class Admin(User):
+    def __init__(self,db,firstName,lastName,email,mobileNo):
+        self.db = db
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.mobileNo = mobileNo
+    
     def adduser(self):
-        if request.method == 'POST':
-            self.firstName = request.form['firstName']
-            self.lastName = request.form['lastName']
-            self.email = request.form['email']
-            self.mobileNo = request.form['mobileNo']
-            return f"Admin {self.firstName} {self.lastName} added"
-        return "Invalid request"
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+
+    # Insert into Users table
+        query = "INSERT INTO Users (firstName, lastName, mobileNo, email) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (self.firstName, self.lastName, self.mobileNo, self.email))
+        user_id = cursor.lastrowid  # Get the last inserted user ID
+        conn.commit()
+
+        query2 = "INSERT INTO Admin (admin_id) VALUES (%s)"
+        cursor.execute(query2, (user_id,))
+        conn.commit()
+
+        return {"status": "Success", "message": "Admin added successfully"}
+    
+    @staticmethod
+    def exist(db, email):
+        conn = db.get_db_connection()
+        cursor = conn.cursor()
+        query = "SELECT user_id FROM Users WHERE email = %s"
+        cursor.execute(query, (email,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return result is not None
+
+
 
 class UserFactory(ABC):
     def create_user(self):
@@ -109,5 +137,5 @@ class FacultyMemberFactory(UserFactory):
         return FacultyMember()
 
 class AdminFactory(UserFactory):
-    def create_user(self):
-        return Admin()
+    def create_user(self,db,firstName,lastName,email,mobileNo):
+        return Admin(db,firstName,lastName,email,mobileNo)
