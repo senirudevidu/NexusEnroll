@@ -2,6 +2,7 @@ from flask import Flask , request,Blueprint,jsonify
 from backend.adminService import AdminService
 from backend.dbconfig import dbconfig
 from backend.departmentService import DepartmentService
+from backend.facService import FacultyService
 from backend.studentService import StudentService
 
 bp = Blueprint("routes",__name__)
@@ -44,3 +45,18 @@ def add_admin():
     service = AdminService(dbconfig())
     result = service.add_admin(firstName, lastName, email, mobileNo)
     return jsonify(result)
+
+@bp.route('/addFacultyMember', methods=['POST'])
+def add_faculty_member():
+    data = request.get_json()
+    firstName = data.get("firstName")
+    lastName = data.get("lastName")
+    email = data.get("email")
+    mobileNo = data.get("mobileNo")
+    role = data.get("role")
+
+    service = FacultyService(dbconfig())
+    result = service.add_faculty_member(firstName, lastName, email, mobileNo, role)
+    return jsonify(result)
+
+
