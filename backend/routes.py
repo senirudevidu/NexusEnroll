@@ -4,6 +4,7 @@ from backend.dbconfig import dbconfig
 from backend.departmentService import DepartmentService
 from backend.facService import FacultyService
 from backend.studentService import StudentService
+from backend.degree import Degree
 
 bp = Blueprint("routes",__name__)
 
@@ -57,6 +58,21 @@ def add_faculty_member():
 
     service = FacultyService(dbconfig())
     result = service.add_faculty_member(firstName, lastName, email, mobileNo, role)
+    return jsonify(result)
+
+@bp.route('/adddegree', methods = ['POST'])
+def add_degree():
+    data = request.get_json()
+    degree_name = data.get("name")
+    credit = data.get("credit")
+    department_name = data.get("department")
+    #definedBy= 
+
+    if not degree_name or not credit or not department_name:
+        return jsonify({"status": "error", "message": "All fields are required"}), 400
+
+    service = Degree(dbconfig())
+    result = service.addDegree(degree_name, credit, department_name)
     return jsonify(result)
 
 
