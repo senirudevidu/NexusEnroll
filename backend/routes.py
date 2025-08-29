@@ -1,4 +1,4 @@
-from flask import Flask , request,Blueprint,jsonify,render_template
+from flask import Flask , request,Blueprint,jsonify,render_template,session
 from backend.adminService import AdminService
 from backend.course import Course
 from backend.dbconfig import dbconfig
@@ -12,19 +12,6 @@ bp = Blueprint("routes",__name__)
 @bp.route('/addUserForm')
 def add_user_form():
     return render_template('addUser.html')
-
-@bp.route('/adddepartment', methods = ['POST'])
-def add_department():
-    data = request.get_json()
-    department_name = data.get("name")
-
-    if not department_name:
-        return jsonify({"status":"error","message":"Department name required"}), 400
-    
-    service = DepartmentService(dbconfig())
-    result, status = service.addDepartment(department_name)
-    return jsonify(result),status
-
 
 @bp.route('/addStudent', methods=['POST'])
 def add_student():
@@ -65,6 +52,23 @@ def add_faculty_member():
     result = service.add_faculty_member(firstName, lastName, email, mobileNo, role)
     return jsonify(result)
 
+@bp.route('/course')
+def course():
+    session['user_id'] = 6  # Set user_id in session for demonstration
+    return render_template('addCourse.html')
+
+@bp.route('/adddepartment', methods = ['POST'])
+def add_department():
+    data = request.get_json()
+    department_name = data.get("name")
+
+    if not department_name:
+        return jsonify({"status":"error","message":"Department name required"}), 400
+    
+    service = DepartmentService(dbconfig())
+    result, status = service.addDepartment(department_name)
+    return jsonify(result),status
+
 @bp.route('/adddegree', methods = ['POST'])
 def add_degree():
     data = request.get_json()
@@ -94,7 +98,7 @@ def add_course():
     preReqYear = data.get("preReqYear")
     allowedDeptID = data.get("dept_Id") # Asign same value as dept_Id
     facultyMem_Id = data.get("facultyMem_Id")
-    addedBy = data.get("addedBy")
+    addedBy = session['user_id']  # Assuming user_id is stored in session
 
     service = Course(dbconfig())
     result = service.addCourse(courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id, addedBy)

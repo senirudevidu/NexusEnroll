@@ -2,10 +2,9 @@
 let addUserForm = document.getElementById('addUserForm');
 
 addUserForm.addEventListener('submit', async (event) => {
-
+    event.preventDefault();
     let module = document.getElementById('module').value;  
     let response; // declare here to use later
-
     if(module === 'student') {
         response = await FormHelper.postJSON('/addStudent', addUserForm);
     } else if(module === 'admin') {
