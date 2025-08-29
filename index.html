@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusEnroll - Faculty Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Blue Header Bar -->
+        <header class="top-header">
+            <div class="header-left">
+                <h1 class="logo">NexusEnroll</h1>
+                <span class="portal">Faculty Portal</span>
+            </div>
+            <div class="header-right">
+                <button class="back-btn">Back to Main</button>
+            </div>
+        </header>
+
+        <!-- Welcome Section (Outside blue box) -->
+        <div class="welcome-section">
+            <h2>Welcome, Dr. Sarah Johnson</h2>
+            <p>Faculty ID: FAC200501 | Department: Computer Science</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-button active" onclick="openTab('class-rosters')">Class Rosters</button>
+            <button class="tab-button" onclick="openTab('grade-submission')">Grade Submission</button>
+            <button class="tab-button" onclick="openTab('my-courses')">My Courses</button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="tab-content">
+            
+            <!-- Class Rosters Tab (First) -->
+            <div id="class-rosters" class="tab-pane active">
+                <h3>View student information for your courses</h3>
+                <div class="roster-section">
+                    <div class="course-selector">
+                        <label for="roster-course-select">Select Course:</label>
+                        <select id="roster-course-select" onchange="loadRoster()">
+                            <option value="">-- Choose Course --</option>
+                            <option value="CS101">CS101: Introduction to Computer Science</option>
+                            <option value="CS201">CS201: Advanced Programming</option>
+                        </select>
+                    </div>
+
+                    <div class="roster-table" id="roster-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roster-table-body">
+                                <!-- Roster will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade Submission Tab (Second) -->
+            <div id="grade-submission" class="tab-pane">
+                <h3>Submit final grades for your students</h3>
+                <div class="grade-section">
+                    <div class="course-selector">
+                        <label for="grade-course-select">Select Course:</label>
+                        <select id="grade-course-select" onchange="loadGradeSheet()">
+                            <option value="">-- Choose Course --</option>
+                            <option value="CS101">CS101: Introduction to Computer Science</option>
+                            <option value="CS201">CS201: Advanced Programming</option>
+                        </select>
+                    </div>
+
+                    <div class="grade-sheet" id="grade-sheet">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Grade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grade-table-body">
+                                <!-- Grades will be populated here -->
+                            </tbody>
+                        </table>
+                        <button class="submit-btn" onclick="submitGrades()" disabled>Submit Grades</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Courses Tab (Third) -->
+            <div id="my-courses" class="tab-pane">
+                <h3>Courses you are handling this semester</h3>
+                <div class="course-list">
+                    <div class="course-card">
+                        <h4>CS101: Introduction to Computer Science</h4>
+                        <p class="schedule">MWF 9:00-10:00 AM | Tech Building 101</p>
+                        <p class="enrollment">Enrollment: 25/30 students</p>
+                        <div class="course-actions">
+                            <button class="action-btn" onclick="updateCourseInfo('CS101')">Update Course Info</button>
+                            <button class="action-btn" onclick="requestChanges('CS101')">Request Changes</button>
+                        </div>
+                    </div>
+                    
+                    <div class="course-card">
+                        <h4>CS201: Advanced Programming</h4>
+                        <p class="schedule">TTh 2:00-3:30 PM | CS Building 205</p>
+                        <p class="enrollment">Enrollment: 18/25 students</p>
+                        <div class="course-actions">
+                            <button class="action-btn" onclick="updateCourseInfo('CS201')">Update Course Info</button>
+                            <button class="action-btn" onclick="requestChanges('CS201')">Request Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
