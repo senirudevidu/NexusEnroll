@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Add User</title>
+	<link rel="stylesheet" href="css/adduser.css">
+</head>
+<body>
+	<h2 style="text-align:center;">Add User</h2>
+	<form id="addUserForm">
+        <div class="form-body">
+            <label for="module">User Role</label>
+            <select id="module" name="module" onchange="showFields()" required>
+                <option value="">Select Role</option>
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+                <option value="faculty">Faculty Member</option>
+            </select>
+
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" required>
+
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="mobileNo">Mobile No</label>
+            <input type="text" id="mobileNo" name="mobileNo" required>
+
+            <div id="studentFields" class="hidden">
+                <label for="yearOfStudy">Year of Study</label>
+                <input type="number" id="yearOfStudy" name="yearOfStudy" min="1" max="6">
+
+                <label for="degreeName">Degree Name</label>
+                <input type="text" id="degreeName" name="degreeName">
+            </div>
+
+            <div id="facultyFields" class="hidden">
+                <label for="roleFaculty">Role</label>
+                <input type="text" id="roleFaculty" name="roleFaculty">
+            </div>
+        </div>
+		<button type="submit">Add User</button>
+	</form>
+
+	<script>
+		function showFields() {
+			var role = document.getElementById('module').value;
+			document.getElementById('studentFields').classList.add('hidden');
+			document.getElementById('facultyFields').classList.add('hidden');
+			if (role === 'student') {
+				document.getElementById('studentFields').classList.remove('hidden');
+			} else if (role === 'faculty') {
+				document.getElementById('facultyFields').classList.remove('hidden');
+			}
+		}
+	</script>
+</body>
+</html>
