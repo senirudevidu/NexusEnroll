@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Add User</title>
-	<link rel="stylesheet" href="css/adduser.css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/adduser.css') }}">
 </head>
 <body>
 	<h2 style="text-align:center;">Add User</h2>
@@ -46,17 +46,8 @@
 		<button type="submit">Add User</button>
 	</form>
 
-	<script>
-		function showFields() {
-			var role = document.getElementById('module').value;
-			document.getElementById('studentFields').classList.add('hidden');
-			document.getElementById('facultyFields').classList.add('hidden');
-			if (role === 'student') {
-				document.getElementById('studentFields').classList.remove('hidden');
-			} else if (role === 'faculty') {
-				document.getElementById('facultyFields').classList.remove('hidden');
-			}
-		}
-	</script>
+	<script src="{{ url_for('static', filename='js/hideUserElements.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sendJSON.js') }}"></script>
 </body>
 </html>

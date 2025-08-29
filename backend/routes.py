@@ -1,4 +1,4 @@
-from flask import Flask , request,Blueprint,jsonify
+from flask import Flask , request,Blueprint,jsonify,render_template
 from backend.adminService import AdminService
 from backend.course import Course
 from backend.dbconfig import dbconfig
@@ -8,6 +8,10 @@ from backend.studentService import StudentService
 from backend.degree import Degree
 
 bp = Blueprint("routes",__name__)
+
+@bp.route('/addUserForm')
+def add_user_form():
+    return render_template('addUser.html')
 
 @bp.route('/adddepartment', methods = ['POST'])
 def add_department():
@@ -22,7 +26,7 @@ def add_department():
     return jsonify(result),status
 
 
-@bp.route('/addstudent', methods=['POST'])
+@bp.route('/addStudent', methods=['POST'])
 def add_student():
     data = request.get_json()
     firstName = data.get("firstName")
@@ -55,7 +59,7 @@ def add_faculty_member():
     lastName = data.get("lastName")
     email = data.get("email")
     mobileNo = data.get("mobileNo")
-    role = data.get("role")
+    role = data.get("roleFaculty")
 
     service = FacultyService(dbconfig())
     result = service.add_faculty_member(firstName, lastName, email, mobileNo, role)
