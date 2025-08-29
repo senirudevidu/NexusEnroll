@@ -1,5 +1,6 @@
 from flask import Flask , request,Blueprint,jsonify
 from backend.adminService import AdminService
+from backend.course import Course
 from backend.dbconfig import dbconfig
 from backend.departmentService import DepartmentService
 from backend.facService import FacultyService
@@ -76,3 +77,21 @@ def add_degree():
     return jsonify(result)
 
 
+@bp.route('/addCourse',methods=['POST'])
+def add_course():
+    data = request.get_json()
+    courseName = data.get("courseName")
+    description = data.get("description")
+    capacity = data.get("capacity")
+    availableSeats = data.get("capacity") # Asign same value as capacity
+    credits = data.get("credits")
+    degree_ID = data.get("degree_ID")
+    dept_Id = data.get("dept_Id")
+    preReqYear = data.get("preReqYear")
+    allowedDeptID = data.get("dept_Id") # Asign same value as dept_Id
+    facultyMem_Id = data.get("facultyMem_Id")
+    addedBy = data.get("addedBy")
+
+    service = Course(dbconfig())
+    result = service.addCourse(courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id, addedBy)
+    return jsonify(result)

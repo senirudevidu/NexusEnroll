@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 
 class Degree():
     def __init__(self,db):
