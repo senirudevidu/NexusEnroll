@@ -12,39 +12,31 @@ class User(ABC):
         pass
 
 class Student(User):
-    def __init__(self,db,firstName,lastName,email,mobileNo,yearOfStudy,degreeName):
+    def __init__(self,db,firstName=None,lastName=None,email=None,mobileNo=None,yearOfStudy=None,degreeID=None):
         self.db = db
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.mobileNo = mobileNo
         self.yearOfStudy = yearOfStudy
-        self.degreeName = degreeName
+        self.degreeID = degreeID
 
-    def getDegreeId(self):
-        conn = self.db.get_db_connection()
-        cursor = conn.cursor()
-        query = "SELECT Degree_ID FROM Degree WHERE name=%s"
-        cursor.execute(query, (self.degreeName,))
-        result = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        if result:
-            return result[0]
-        else:
-            return {"status": "Error", "message": "Degree not found"}
+    # def getDegreeId(self):
+    #     conn = self.db.get_db_connection()
+    #     cursor = conn.cursor()
+    #     query = "SELECT Degree_ID FROM Degree WHERE name=%s"
+    #     cursor.execute(query, (self.degreeName,))
+    #     result = cursor.fetchone()
+    #     cursor.close()
+    #     conn.close()
+    #     if result:
+    #         return result[0]
+    #     else:
+    #         return {"status": "Error", "message": "Degree not found"}
         
     def adduser(self):
         conn = self.db.get_db_connection()
         cursor = conn.cursor()
-        self.degreeId = self.getDegreeId()
-
-        # If degreeId is an error dict, raise an exception
-        if isinstance(self.degreeId, dict):
-            cursor.close()
-            conn.close()
-            raise Exception(self.degreeId.get("message", "Degree not found"))
-
         try:
             # Insert into Users table
             query = "INSERT INTO Users (firstName, lastName, mobileNo, email) VALUES (%s, %s, %s, %s)"
@@ -53,16 +45,33 @@ class Student(User):
             conn.commit()
 
             # Insert into Students table, linking to user_id
-            query2 = "INSERT INTO Students (user_id, YearOfStudy, degree_ID) VALUES (%s, %s, %s)"
-            cursor.execute(query2, (user_id, self.yearOfStudy, self.degreeId))
+            query2 = "INSERT INTO Student (student_Id, YearOfStudy, degree_ID) VALUES (%s, %s, %s)"
+            cursor.execute(query2, (user_id, self.yearOfStudy, self.degreeID))
             conn.commit()
-            result = {"status": "Success", "message": "Student added successfully"}
+            result = {"status": "Success", "message": "Student added successfully", "id": user_id}
         except Exception as e:
-                result = {"status": "Error", "message": str(e)}
+            result = {"status": "Error", "message": str(e)}
         finally:
             cursor.close()
             conn.close()
         return result
+
+    
+    def displayStudents(self):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        query = """
+            SELECT u.user_id,u.firstName,u.lastName,u.accountStatus,s.YearOfStudy,d.name
+            FROM Users as u
+            JOIN Student as s ON u.user_id = s.student_Id
+            JOIN Degree as d on s.degree_ID = d.degree_ID;
+            """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return result
+        
 
     @staticmethod
     def exist(db, email):
@@ -163,8 +172,8 @@ class UserFactory(ABC):
         pass
 
 class StudentFactory(UserFactory):
-    def create_user(self, db, firstName, lastName, email, mobileNo, yearOfStudy, degreeName):
-        return Student(db, firstName, lastName, email, mobileNo, yearOfStudy, degreeName)
+    def create_user(self, db, firstName, lastName, email, mobileNo, yearOfStudy, degreeID):
+        return Student(db, firstName, lastName, email, mobileNo, yearOfStudy, degreeID)
 
 class FacultyMemberFactory(UserFactory):
     def create_user(self, db, firstName, lastName, email, mobileNo, role):

@@ -34,8 +34,13 @@
                 <label for="yearOfStudy">Year of Study</label>
                 <input type="number" id="yearOfStudy" name="yearOfStudy" min="1" max="6">
 
-                <label for="degreeName">Degree Name</label>
-                <input type="text" id="degreeName" name="degreeName">
+                <label for="degree_ID">Degree:</label>
+                <select name="degree_ID">
+                    <option value="">--Select Degree--</option>
+                    {% for degree in degrees %}
+                        <option value="{{degree[0]}}">{{degree[1]}}</option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div id="facultyFields" class="hidden">

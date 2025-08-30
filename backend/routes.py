@@ -1,3 +1,4 @@
+from turtle import st
 from flask import request,Blueprint,jsonify,render_template,session
 from backend.adminService import AdminService
 from backend.course import Course
@@ -13,7 +14,9 @@ bp = Blueprint("routes",__name__)
 
 @bp.route('/addUserForm')
 def add_user_form():
-    return render_template('addUser.html')
+    degree_service = DegreeService(dbconfig())
+    degrees = degree_service.get_degrees()
+    return render_template('addUser.html', degrees=degrees)
 
 @bp.route('/addStudent', methods=['POST'])
 def add_student():
@@ -23,10 +26,10 @@ def add_student():
     email = data.get("email")
     mobileNo = data.get("mobileNo")
     yearOfStudy = data.get("yearOfStudy")
-    degreeName = data.get("degreeName")
+    degreeID = data.get("degree_ID")
 
     service = StudentService(dbconfig())
-    result, status = service.addStudent(firstName, lastName, email, mobileNo, yearOfStudy, degreeName)
+    result, status = service.addStudent(firstName, lastName, email, mobileNo, yearOfStudy, degreeID)
     return jsonify(result), status
 
 @bp.route('/addAdmin', methods=['POST'])
@@ -129,6 +132,11 @@ def add_course():
 def display_courses():
     service = CourseService(dbconfig())
     courses = service.getAllCourses()
-    print("DEBUG courses:", courses)  # Debug print
     return render_template('displayCourse.html', courses=courses)
 
+@bp.route('/displayUsers')
+def display_users():
+    service = StudentService(dbconfig())
+    users = service.displayStudents()
+    print("DEBUG users:", users)  # Debug print
+    return render_template('displayUsers.html', users=users)
