@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='css/addDepartment.css') }}" rel="stylesheet">
+    <title>Add Department</title>
+</head>
+<body>
+    <h2>Add New Department</h2>
+    <form id="addDepartment">
+        <label for="name">Department Name:</label>
+        <input type="text" id="name" name="name" required placeholder="Enter department name"><br>
+
+        <button type="submit">Add Department</button>
+
+    </form>
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sendDep.js') }}"></script>
+</body>
+</html>

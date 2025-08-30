@@ -65,7 +65,11 @@ def course():
     print("DEBUG faculty_members:", faculty_members)  # Debug print
     return render_template('addCourse.html', departments=departments, degrees=degrees, faculty_members=faculty_members)
 
-@bp.route('/adddepartment', methods = ['POST'])
+@bp.route('/departments')
+def departments():
+    return render_template('addDepartment.html')
+
+@bp.route('/addDepartment', methods = ['POST'])
 def add_department():
     data = request.get_json()
     department_name = data.get("name")
