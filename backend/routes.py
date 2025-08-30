@@ -1,5 +1,4 @@
-from unittest import result
-from flask import Flask , request,Blueprint,jsonify,render_template,session
+from flask import request,Blueprint,jsonify,render_template,session
 from backend.adminService import AdminService
 from backend.course import Course
 from backend.courseService import CourseService
