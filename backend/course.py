@@ -9,16 +9,13 @@ class Course():
         conn.commit()
         return {"status": "Success", "message": "Course added successfully"}
     
-    def getAllCourses(self):
-        conn = self.db.get_db_connection()
-        cursor = conn.cursor()
-        try:
-            query = "SELECT courseName, FROM Course"
-            cursor.execute(query)
-            courses = cursor.fetchall()
-        except Exception as e:
-            print("Error fetching courses:", e)
-        finally:
-            cursor.close()
-            conn.close()
+    def getAllCourses(self, cursor):
+        query = """
+        SELECT C.courseName,U.firstName,U.lastName,dept.deptName,C.availableSeats,C.capacity
+        FROM Course AS C
+        JOIN Users as U ON C.facultyMem_Id = U.user_id
+        JOIN Department as dept ON C.dept_Id = dept.dept_Id
+        """
+        cursor.execute(query)
+        courses = cursor.fetchall()
         return courses

@@ -21,4 +21,14 @@ class CourseService:
             conn.close()
     
     def getAllCourses(self):
-        return self.Course.getAllCourses()
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+
+        try:
+            result = self.Course.getAllCourses(cursor)
+            return result
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()

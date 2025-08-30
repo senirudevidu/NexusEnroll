@@ -11,22 +11,24 @@
     <table class="course-table">
         <thead>
             <tr>
-                <th>Course ID</th>
                 <th>Course Name</th>
                 <th>Instructor</th>
                 <th>Department</th>
-                <th>Enrollment Actions</th>
+                <th>Availability</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <!-- Example row, replace with dynamic content as needed -->
+            {% for course in courses %}
             <tr>
-                <td>CS101</td>
-                <td>Introduction to Computer Science</td>
-                <td>Dr. Smith</td>
-                <td>Computer Science</td>
+                <td>{{ course[0] }}</td>
+                <td>{{ course[1] }} {{ course[2] }}</td>
+                <td>{{ course[3] }}</td>
+                <td>{{ course[4] }}/{{ course[5] }}</td>
                 <td><button class="enroll-btn">Enroll</button></td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 </body>

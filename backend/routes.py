@@ -1,3 +1,4 @@
+from unittest import result
 from flask import Flask , request,Blueprint,jsonify,render_template,session
 from backend.adminService import AdminService
 from backend.course import Course
@@ -124,3 +125,11 @@ def add_course():
     service = CourseService(dbconfig())
     result = service.addCourse(courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id, addedBy)
     return jsonify(result)
+
+@bp.route('/displayCourses')
+def display_courses():
+    service = CourseService(dbconfig())
+    courses = service.getAllCourses()
+    print("DEBUG courses:", courses)  # Debug print
+    return render_template('displayCourse.html', courses=courses)
+
