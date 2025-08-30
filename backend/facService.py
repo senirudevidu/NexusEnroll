@@ -21,3 +21,16 @@ class FacultyService:
         finally:
             cursor.close()
             conn.close()
+
+    def get_faculty_members(self):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        try:
+            faculty_member = FacultyMember(self.db)
+            result = faculty_member.get_faculty_members(cursor)
+            return result
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()

@@ -60,8 +60,10 @@ def course():
     departments = department_service.getDepartments()
     degree_service = DegreeService(dbconfig())
     degrees = degree_service.get_degrees()
-    print("DEBUG degrees:", departments)  # Debug print
-    return render_template('addCourse.html', departments=departments, degrees=degrees)
+    faculty_service = FacultyService(dbconfig())
+    faculty_members = faculty_service.get_faculty_members()
+    print("DEBUG faculty_members:", faculty_members)  # Debug print
+    return render_template('addCourse.html', departments=departments, degrees=degrees, faculty_members=faculty_members)
 
 @bp.route('/adddepartment', methods = ['POST'])
 def add_department():

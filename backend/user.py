@@ -76,7 +76,7 @@ class Student(User):
         return result is not None
 
 class FacultyMember(User):
-    def __init__(self,db,firstName,lastName,email,mobileNo,role):
+    def __init__(self,db=None,firstName=None,lastName=None,email=None,mobileNo=None,role=None):
         self.db = db
         self.firstName = firstName
         self.lastName = lastName
@@ -100,6 +100,15 @@ class FacultyMember(User):
         conn.commit()
         
         return {"status": "Success", "message": "Faculty member added successfully"}
+
+    def get_faculty_members(self,cursor):
+        query = """SELECT U.user_id, U.firstName, U.lastName 
+        FROM Users AS U 
+        JOIN FacultyStaff AS Fac ON U.user_id = Fac.facultyMem_Id;
+        """
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
 
     @staticmethod
     def exist(db, email):
