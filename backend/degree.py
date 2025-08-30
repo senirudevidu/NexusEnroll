@@ -33,3 +33,11 @@ class Degree():
         finally:
             cursor.close()
             conn.close()
+
+    def getDegrees(self,conn,cursor):
+        query = 'SELECT degree_ID,name FROM Degree'
+        cursor.execute(query)
+        degrees = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return degrees

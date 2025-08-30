@@ -21,17 +21,32 @@
 		<label for="credits">Credits:</label>
 		<input type="number" id="credits" name="credits" min="0" required><br>
 
-		<label for="degree_ID">Degree ID:</label>
-		<input type="text" id="degree_ID" name="degree_ID" required><br>
+		<label for="degree_ID">Degree:</label>
+		<select name="degree_ID">
+			<option value="">--Select Degree--</option>
+			{% for degree in degrees %}
+				<option value="{{degree[0]}}">{{degree[1]}}</option>
+			{% endfor %}
+		</select>
 
-		<label for="dept_Id">Department ID:</label>
-		<input type="text" id="dept_Id" name="dept_Id" required><br>
+		<label for="dept_Id">Department:</label>
+		<select name="dept_Id" id="department">
+			<option value="">--Select Department--</option>
+			{% for dept in departments %}
+				<option value="{{ dept[0] }}">{{ dept[1] }}</option>
+			{% endfor %}
+		</select>
 
 		<label for="preReqYear">Pre-requisite Year:</label>
-		<input type="number" id="preReqYear" name="preReqYear" min="1" required><br>
+		<input type="number" id="preReqYear" name="preReqYear" min="1" max="4" required><br>
 
-		<label for="facultyMem_Id">Faculty Member ID:</label>
-		<input type="text" id="facultyMem_Id" name="facultyMem_Id" required><br>
+		<label for="facultyMem_Id">Faculty Member:</label>
+		<select name="facultyMem_Id" id="facultyMem_Id">
+			<option value="">--Select Faculty Member--</option>
+			{% for faculty in faculty_members %}
+				<option value="{{ faculty[0] }}">{{ faculty[1] }}</option>
+			{% endfor %}
+		</select>
 
 		<button type="submit">Add Course</button>
 	</form>

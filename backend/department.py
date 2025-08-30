@@ -6,7 +6,7 @@ class DefaultDepartmentFactory(ABC):
         pass
 
 class Department():
-    def __init__(self, name):
+    def __init__(self, name=None):
         self.name = name
 
     def save(self, cursor, conn):
@@ -14,6 +14,13 @@ class Department():
         conn.commit()
         self.id = cursor.lastrowid if hasattr(cursor, 'lastrowid') else cursor.lastrowid
         return self.id
+    
+    def get(self, cursor):
+        query = "SELECT dept_Id, deptName FROM Department"
+        cursor.execute(query)
+        departments = cursor.fetchall()
+        return departments
+    
 
     @staticmethod
     def exists(cursor, name):

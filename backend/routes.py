@@ -6,6 +6,7 @@ from backend.departmentService import DepartmentService
 from backend.facService import FacultyService
 from backend.studentService import StudentService
 from backend.degree import Degree
+from backend.degreeService import DegreeService
 
 bp = Blueprint("routes",__name__)
 
@@ -55,7 +56,12 @@ def add_faculty_member():
 @bp.route('/course')
 def course():
     session['user_id'] = 6  # Set user_id in session for demonstration
-    return render_template('addCourse.html')
+    department_service = DepartmentService(dbconfig())
+    departments = department_service.getDepartments()
+    degree_service = DegreeService(dbconfig())
+    degrees = degree_service.get_degrees()
+    print("DEBUG degrees:", departments)  # Debug print
+    return render_template('addCourse.html', departments=departments, degrees=degrees)
 
 @bp.route('/adddepartment', methods = ['POST'])
 def add_department():

@@ -30,7 +30,22 @@ class DepartmentService:
             cursor.close() #close the connection after all done
             conn.close()
 
-        
+    def getDepartments(self):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()    
 
+        try:
+            department = Department()
+            departments = department.get(cursor)
 
+            if (departments):
+                return departments
+            else:
+                return {"dept[0]": "0" , "dept[1]": "No Any Departments"}
+            
+        except Exception as e:
+            return {"status": "error", "message": str(e)}, 500
 
+        finally:
+            cursor.close()
+            conn.close()
