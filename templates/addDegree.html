@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Degree</title>
+</head>
+<body>
+    <h2>Add New Degree</h2>
+    <form id="addDegree" method="post">
+        <label for="name">Degree Name:</label>
+        <input type="text" id="name" name="name" required placeholder="Enter degree name"><br>
+
+        <label for="credit">Credits:</label>
+        <input type="number" id="credit" name="credit" required placeholder="Enter credits allocated for this program"><br>
+
+        <label for="department">Department:</label>
+		<select name="department" id="department">
+			<option value="">--Select Department--</option>
+			{% for dept in departments %}
+				<option value="{{ dept[0] }}"> {{ dept[1] }} </option>
+			{% endfor %}
+		</select>
+        <button type="submit">Add Degree</button>
+    </form>
+    <script src="{{ url_for('static', filename='js/formHelper.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sendDeg.js') }}"></script>
+</body>
+</html>

@@ -81,13 +81,21 @@ def add_department():
     result, status = service.addDepartment(department_name)
     return jsonify(result),status
 
-@bp.route('/adddegree', methods = ['POST'])
+@bp.route('/degrees')
+def degrees():
+    department_service = DepartmentService(dbconfig())
+    departments = department_service.getDepartments()
+    print("DEBUG departments:", departments)  # Debug print
+    return render_template('addDegree.html', departments=departments)
+
+@bp.route('/addDegree', methods = ['POST'])
 def add_degree():
     data = request.get_json()
     degree_name = data.get("name")
     credit = data.get("credit")
     department_name = data.get("department")
-    #definedBy= 
+    # session['user_id'] = 6
+    # definedBy= session['user_id']  # Assuming user_id is stored in session
 
     if not degree_name or not credit or not department_name:
         return jsonify({"status": "error", "message": "All fields are required"}), 400
