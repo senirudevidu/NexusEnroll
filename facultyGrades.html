@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Grade Submission</title>
+  <link rel="stylesheet" href="facultyGrades.css">
+</head>
+<body>
+    <!-- Header -->
+  <header class="admin-header">
+    <div class="logo">NexusEnroll <span class="portal">Faculty Portal</span></div>
+    <button class="back-btn">Back to Main</button>
+  </header>
+
+  <div class="container">
+    <header class="header">
+      <h2>Welcome, Dr. Sarah Johnson</h2>
+      <p>Faculty ID: FAC2024001 | Department: Computer Science</p>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab">Class Rosters</button>
+      <button class="tab active">Grade Submission</button>
+      <button class="tab">My Courses</button>
+    </nav>
+
+    <section class="card">
+      <h3>📑 Grade Submission</h3>
+      <p>Submit final grades for your students</p>
+
+      <div class="course-select">
+        <label for="course">Course: </label>
+        <select id="course">
+          <option value="CS101">CS101: Introduction to Computer Science</option>
+          <option value="CS201">CS201: Data Structures</option>
+        </select>
+      </div>
+
+      <table class="grade-table">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="grade-body">
+          <!-- Rows populated dynamically -->
+        </tbody>
+      </table>
+
+      <button id="submit-btn" class="submit-btn">Submit Grades</button>
+    </section>
+  </div>
+
+  <script src="facultyGrades.js"></script>
+</body>
+</html>
