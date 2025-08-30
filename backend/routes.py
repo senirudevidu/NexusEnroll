@@ -1,6 +1,7 @@
 from flask import Flask , request,Blueprint,jsonify,render_template,session
 from backend.adminService import AdminService
 from backend.course import Course
+from backend.courseService import CourseService
 from backend.dbconfig import dbconfig
 from backend.departmentService import DepartmentService
 from backend.facService import FacultyService
@@ -118,8 +119,8 @@ def add_course():
     preReqYear = data.get("preReqYear")
     allowedDeptID = data.get("dept_Id") # Asign same value as dept_Id
     facultyMem_Id = data.get("facultyMem_Id")
-    addedBy = session['user_id']  # Assuming user_id is stored in session
+    addedBy = 6  # Assuming user_id is stored in session
 
-    service = Course(dbconfig())
+    service = CourseService(dbconfig())
     result = service.addCourse(courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id, addedBy)
     return jsonify(result)
