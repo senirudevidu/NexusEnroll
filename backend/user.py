@@ -111,7 +111,7 @@ class FacultyMember(User):
         return {"status": "Success", "message": "Faculty member added successfully"}
 
     def get_faculty_members(self,cursor):
-        query = """SELECT U.user_id, U.firstName, U.lastName 
+        query = """SELECT U.user_id, U.firstName, U.lastName, U.accountStatus, Fac.role
         FROM Users AS U 
         JOIN FacultyStaff AS Fac ON U.user_id = Fac.facultyMem_Id;
         """

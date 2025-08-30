@@ -138,5 +138,8 @@ def display_courses():
 def display_users():
     service = StudentService(dbconfig())
     users = service.displayStudents()
+
+    facService = FacultyService(dbconfig())
+    faculty_members = facService.get_faculty_members()
     print("DEBUG users:", users)  # Debug print
-    return render_template('displayUsers.html', users=users)
+    return render_template('displayUsers.html', users=users, faculty_members=faculty_members)
