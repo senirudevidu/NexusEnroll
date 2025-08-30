@@ -9,6 +9,7 @@ from backend.facService import FacultyService
 from backend.studentService import StudentService
 from backend.degree import Degree
 from backend.degreeService import DegreeService
+from backend.reports import FacultyWorkloadReport,EnrollmentStatisticsReport
 
 bp = Blueprint("routes",__name__)
 
@@ -143,3 +144,13 @@ def display_users():
     faculty_members = facService.get_faculty_members()
     print("DEBUG users:", users)  # Debug print
     return render_template('displayUsers.html', users=users, faculty_members=faculty_members)
+
+@bp.route('/displayReports')
+def display_reports():
+    enrollmentReport = EnrollmentStatisticsReport(3)
+    enrollment_data = enrollmentReport.outputData()
+    print("DEBUG enrollment_data:", enrollment_data)  # Debug print
+
+    facultyWorkLoadReport = FacultyWorkloadReport(8)
+    fac_report_data = facultyWorkLoadReport.outputData()
+    return render_template('reports.html', enrollment_data=enrollment_data, fac_report_data=fac_report_data)

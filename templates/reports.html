@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reports.css') }}">
+</head>
+<body>
+    <h2 style="text-align:center;">Reports</h2>
+    <h3 class="report-title">Enrollment Statistics</h3>
+    {% if enrollment_data %}
+    <div class="card-container">
+        {% for course in enrollment_data %}
+        <div class="report-card">
+            <div class="card-header">
+                <span class="course-name">{{ course.courseName }}</span>
+                <span class="status {{ course.status | lower }}">{{ course.status }}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-row"><span class="label">Department:</span> <span>{{ course.department }}</span></div>
+                <div class="card-row"><span class="label">Available Seats:</span> <span>{{ course.availableSeats }}</span></div>
+                <div class="card-row"><span class="label">Capacity:</span> <span>{{ course.capacity }}</span></div>
+                <div class="card-row"><span class="label">Enrolled %:</span> <span>{{ course.enrolledPercentage | round(2) }}%</span></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="error">No enrollment report data available.</div>
+    {% endif %}
+
+    <h3 class="report-title">Faculty Workload</h3>
+    {% if fac_report_data %}
+    {% if fac_report_data.error %}
+        <div class="error">{{ fac_report_data.error }}</div>
+    {% else %}
+    <div class="card-container">
+        <div class="report-card">
+            <div class="card-header">
+                <span class="course-name">Faculty Workload</span>
+            </div>
+            <div class="card-body">
+                <div class="card-row"><span class="label">Number of Courses:</span> <span>{{ fac_report_data.numberOfCourses }}</span></div>
+                <div class="card-row"><span class="label">Total Students:</span> <span>{{ fac_report_data.totalStudents }}</span></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% else %}
+        <div class="error">No faculty workload report data available.</div>
+    {% endif %}
+</body>
+</html>

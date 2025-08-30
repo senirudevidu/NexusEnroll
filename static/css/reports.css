@@ -1,0 +1,81 @@
+body {
+	background: #f7f8fa;
+	font-family: 'Segoe UI', Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+.report-title {
+	text-align: center;
+	margin-top: 30px;
+	font-size: 2rem;
+	color: #333;
+}
+
+.card-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 24px;
+	margin: 30px auto;
+	max-width: 1200px;
+}
+
+.report-card {
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+	width: 320px;
+	padding: 24px 20px;
+	display: flex;
+	flex-direction: column;
+	transition: box-shadow 0.2s;
+}
+.report-card:hover {
+	box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+.card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+.course-name {
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #2a4d8f;
+}
+.status {
+	padding: 4px 12px;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	font-weight: 500;
+	color: #fff;
+}
+.status.open {
+	background: #4caf50;
+}
+.status.full {
+	background: #e53935;
+}
+.card-body {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+.card-row {
+	display: flex;
+	justify-content: space-between;
+	font-size: 1rem;
+	color: #444;
+}
+.label {
+	font-weight: 500;
+	color: #888;
+}
+.error {
+	color: #e53935;
+	text-align: center;
+	margin-top: 40px;
+	font-size: 1.1rem;
+}
