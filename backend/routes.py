@@ -21,6 +21,14 @@ def index():
 def admin_dashboard():
     return render_template('admin_dashboard.html')
 
+@bp.route('/faculty')
+def faculty_dashboard():
+    return render_template('faculty_dashboard.html')
+
+@bp.route('/student')
+def student_dashboard():
+    return render_template('student_dashboard.html')
+
 @bp.route('/addUserForm')
 def add_user_form():
     degree_service = DegreeService(dbconfig())
@@ -158,3 +166,4 @@ def api_courses():
     service = CourseService(dbconfig())
     courses = service.getAllCourses()
     return jsonify(courses)
+
