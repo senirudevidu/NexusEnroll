@@ -167,3 +167,62 @@ def api_courses():
     courses = service.getAllCourses()
     return jsonify(courses)
 
+@bp.route('/api/courses/<int:course_id>')
+def api_get_course(course_id):
+    service = CourseService(dbconfig())
+    course = service.getCourseById(course_id)
+    if course:
+        return jsonify(course)
+    else:
+        return jsonify({"status": "Error", "message": "Course not found"}), 404
+
+@bp.route('/api/courses/<int:course_id>', methods=['PUT'])
+def api_update_course(course_id):
+    data = request.get_json()
+    courseName = data.get("courseName")
+    description = data.get("description")
+    capacity = data.get("capacity")
+    availableSeats = data.get("availableSeats", capacity)  # Default to capacity if not provided
+    credits = data.get("credits")
+    degree_ID = data.get("degree_ID")
+    dept_Id = data.get("dept_Id")
+    preReqYear = data.get("preReqYear")
+    allowedDeptID = data.get("allowedDeptID", dept_Id)  # Default to dept_Id if not provided
+    facultyMem_Id = data.get("facultyMem_Id")
+
+    service = CourseService(dbconfig())
+    result = service.updateCourse(course_id, courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id)
+    
+    if result.get("status") == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/courses/<int:course_id>', methods=['DELETE'])
+def api_delete_course(course_id):
+    service = CourseService(dbconfig())
+    result = service.deleteCourse(course_id)
+    
+    if result.get("status") == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/departments')
+def api_departments():
+    service = DepartmentService(dbconfig())
+    departments = service.getDepartments()
+    return jsonify(departments)
+
+@bp.route('/api/degrees')
+def api_degrees():
+    service = DegreeService(dbconfig())
+    degrees = service.get_degrees()
+    return jsonify(degrees)
+
+@bp.route('/api/faculty')
+def api_faculty():
+    service = FacultyService(dbconfig())
+    faculty = service.get_faculty_members()
+    return jsonify(faculty)
+
