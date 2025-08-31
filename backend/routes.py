@@ -13,6 +13,10 @@ from backend.reports import FacultyWorkloadReport,EnrollmentStatisticsReport
 
 bp = Blueprint("routes",__name__)
 
+@bp.route('/')
+def index():
+    return render_template('index.html')
+
 @bp.route('/admin')
 def admin_dashboard():
     return render_template('admin_dashboard.html')
