@@ -141,15 +141,13 @@ def api_users():
     faculty_members = faculty_service.get_faculty_members()
     return jsonify({'users': users, 'faculty_members': faculty_members})
 
-@bp.route('/displayReports')
-def display_reports():
+@bp.route('/api/reports')
+def api_reports():
     enrollmentReport = EnrollmentStatisticsReport(3)
     enrollment_data = enrollmentReport.outputData()
-    print("DEBUG enrollment_data:", enrollment_data)  # Debug print
-
     facultyWorkLoadReport = FacultyWorkloadReport(8)
     fac_report_data = facultyWorkLoadReport.outputData()
-    return render_template('reports.html', enrollment_data=enrollment_data, fac_report_data=fac_report_data)
+    return jsonify({'enrollment_data': enrollment_data, 'fac_report_data': fac_report_data})
 
 @bp.route('/api/courses')
 def api_courses():

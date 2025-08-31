@@ -89,48 +89,17 @@
 
       <!-- Reports -->
       <section id="reports" class="tab-content">
-        <h3>Reports & Analytics</h3>
-        <div class="report-card">
-          <h4>Department Analytics</h4>
-          <table>
-            <thead>
-              <tr>
-                <th>Department</th>
-                <th>Total Courses</th>
-                <th>Total Enrolled</th>
-                <th>Avg Capacity</th>
-                <th>Faculty Workload</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Computer Science</td>
-                <td>8</td>
-                <td>156</td>
-                <td>87%</td>
-                <td>12.5 hrs/week</td>
-              </tr>
-              <tr>
-                <td>Mathematics</td>
-                <td>12</td>
-                <td>210</td>
-                <td>92%</td>
-                <td>14.2 hrs/week</td>
-              </tr>
-              <tr>
-                <td>English</td>
-                <td>6</td>
-                <td>98</td>
-                <td>78%</td>
-                <td>11.8 hrs/week</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="report-actions">
-            <button class="add-btn">Export to CSV</button>
-            <button class="add-btn">Generate Full Report</button>
-          </div>
+        <h3 class="report-title">Enrollment Statistics</h3>
+        <div class="card-container" id="enrollment-report-container">
+          <!-- Enrollment cards will be dynamically inserted here by JS -->
         </div>
+        <div id="enrollment-error" class="error" style="display:none;">No enrollment report data available.</div>
+
+        <h3 class="report-title">Faculty Workload</h3>
+        <div class="card-container" id="faculty-workload-container">
+          <!-- Faculty workload card will be dynamically inserted here by JS -->
+        </div>
+        <div id="faculty-error" class="error" style="display:none;">No faculty workload report data available.</div>
       </section>
 
       <!-- Settings -->
