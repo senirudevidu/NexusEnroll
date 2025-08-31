@@ -65,7 +65,7 @@
       <section id="user-management" class="tab-content">
         <div class="section-header">
           <h3>User Management</h3>
-          <button class="add-btn">+ Add User</button>
+          <button class="add-btn" onclick="window.location.href='/addUserForm'">+ Add User</button>
         </div>
         <table>
           <thead>
@@ -78,40 +78,11 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>ST2024001</td>
-              <td>Alex Thompson</td>
-              <td>Student</td>
-              <td>Computer Science</td>
-              <td><button class="active-button">Active</button></td>
-              <td>
-                <button class="icon-btn">✏️</button>
-                <button class="deactive-button">Deactivate</button>
-              </td>
-            </tr>
-            <tr>
-              <td>FAC2024001</td>
-              <td>Dr. Sarah Johnson</td>
-              <td>Faculty</td>
-              <td>Computer Science</td>
-              <td><button class="active-button">Active</button></td>
-              <td>
-                <button class="icon-btn">✏️</button>
-                <button class="deactive-button">Deactivate</button>
-              </td>
-            </tr>
-            <tr>
-              <td>ST2024002</td>
-              <td>Sarah Wilson</td>
-              <td>Student</td>
-              <td>Mathematics</td>
-              <td><button class="active-button">Active</button></td>
-              <td>
-                <button class="icon-btn">✏️</button>
-                <button class="deactive-button">Deactivate</button>
-              </td>
-            </tr>
+          <tbody id="user-table-body">
+            <!-- Student rows will be inserted here -->
+          </tbody>
+          <tbody id="faculty-table-body">
+            <!-- Faculty rows will be inserted here -->
           </tbody>
         </table>
       </section>

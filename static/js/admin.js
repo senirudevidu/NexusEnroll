@@ -11,6 +11,8 @@ function showTab(tabId) {
 
   if (tabId === "course-management") {
     loadCourses();
+  } else if (tabId === "user-management") {
+    loadUsers();
   }
 }
 
@@ -38,6 +40,54 @@ function loadCourses() {
     },
     function (error) {
       alert("Failed to load courses");
+    }
+  );
+}
+
+function loadUsers() {
+  AjaxHelper.get(
+    "/api/users",
+    function (data) {
+      // Students
+      const userTbody = document.getElementById("user-table-body");
+      userTbody.innerHTML = "";
+      data.users.forEach((user) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+        <td>${user[0]}</td>
+        <td>${user[1]} ${user[2]}</td>
+        <td>Student</td>
+        <td>${user[5]}</td>
+        <td><button class="active-button">${user[3]}</button></td>
+        <td>
+          <button class="icon-btn">✏️</button>
+          <button class="deactive-button">Deactivate</button>
+        </td>
+      `;
+        userTbody.appendChild(row);
+      });
+
+      // Faculty
+      const facultyTbody = document.getElementById("faculty-table-body");
+      facultyTbody.innerHTML = "";
+      data.faculty_members.forEach((faculty) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+        <td>${faculty[0]}</td>
+        <td>${faculty[1]} ${faculty[2]}</td>
+        <td>Faculty</td>
+        <td>${faculty[4]}</td>
+        <td><button class="active-button">${faculty[3]}</button></td>
+        <td>
+          <button class="icon-btn">✏️</button>
+          <button class="deactive-button">Deactivate</button>
+        </td>
+      `;
+        facultyTbody.appendChild(row);
+      });
+    },
+    function (error) {
+      alert("Failed to load users");
     }
   );
 }

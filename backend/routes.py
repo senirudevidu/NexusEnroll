@@ -133,15 +133,13 @@ def add_course():
     result = service.addCourse(courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id, addedBy)
     return jsonify(result)
 
-@bp.route('/displayUsers')
-def display_users():
-    service = StudentService(dbconfig())
-    users = service.displayStudents()
-
-    facService = FacultyService(dbconfig())
-    faculty_members = facService.get_faculty_members()
-    print("DEBUG users:", users)  # Debug print
-    return render_template('displayUsers.html', users=users, faculty_members=faculty_members)
+@bp.route('/api/users')
+def api_users():
+    student_service = StudentService(dbconfig())
+    users = student_service.displayStudents()
+    faculty_service = FacultyService(dbconfig())
+    faculty_members = faculty_service.get_faculty_members()
+    return jsonify({'users': users, 'faculty_members': faculty_members})
 
 @bp.route('/displayReports')
 def display_reports():
