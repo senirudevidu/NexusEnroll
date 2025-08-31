@@ -49,3 +49,23 @@ class StudentService:
         finally:
             cursor.close()
             conn.close()
+    
+    def updateStudent(self, user_id, firstName=None, lastName=None, email=None, mobileNo=None, yearOfStudy=None, degreeID=None):
+        try:
+            result = self.student.update_user(user_id, firstName, lastName, email, mobileNo, yearOfStudy, degreeID)
+            if result["status"] == "Success":
+                return result, 200
+            else:
+                return result, 400
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}, 500
+    
+    def deactivateStudent(self, user_id):
+        try:
+            result = self.student.deactivate_user(user_id)
+            if result["status"] == "Success":
+                return result, 200
+            else:
+                return result, 400
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}, 500

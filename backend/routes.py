@@ -226,3 +226,85 @@ def api_faculty():
     faculty = service.get_faculty_members()
     return jsonify(faculty)
 
+# User Update Routes
+@bp.route('/api/users/<int:user_id>', methods=['PUT'])
+def api_update_user(user_id):
+    data = request.get_json()
+    user_type = data.get('user_type')
+    
+    firstName = data.get('firstName')
+    lastName = data.get('lastName')
+    email = data.get('email')
+    mobileNo = data.get('mobileNo')
+    
+    if user_type == 'student':
+        yearOfStudy = data.get('yearOfStudy')
+        degreeID = data.get('degreeID')
+        service = StudentService(dbconfig())
+        result, status = service.updateStudent(user_id, firstName, lastName, email, mobileNo, yearOfStudy, degreeID)
+    elif user_type == 'faculty':
+        role = data.get('role')
+        service = FacultyService(dbconfig())
+        result, status = service.updateFacultyMember(user_id, firstName, lastName, email, mobileNo, role)
+    elif user_type == 'admin':
+        service = AdminService(dbconfig())
+        result, status = service.updateAdmin(user_id, firstName, lastName, email, mobileNo)
+    else:
+        return jsonify({"status": "Error", "message": "Invalid user type"}), 400
+    
+    return jsonify(result), status
+
+@bp.route('/api/users/<int:user_id>/deactivate', methods=['POST'])
+def api_deactivate_user(user_id):
+    data = request.get_json()
+    user_type = data.get('user_type')
+    
+    if user_type == 'student':
+        service = StudentService(dbconfig())
+        result, status = service.deactivateStudent(user_id)
+    elif user_type == 'faculty':
+        service = FacultyService(dbconfig())
+        result, status = service.deactivateFacultyMember(user_id)
+    elif user_type == 'admin':
+        service = AdminService(dbconfig())
+        result, status = service.deactivateAdmin(user_id)
+    else:
+        return jsonify({"status": "Error", "message": "Invalid user type"}), 400
+    
+    return jsonify(result), status
+
+@bp.route('/api/users/<int:user_id>', methods=['GET'])
+def api_get_user(user_id):
+    # Get user details for editing
+    student_service = StudentService(dbconfig())
+    faculty_service = FacultyService(dbconfig())
+    
+    # Try to find user in students first
+    students = student_service.displayStudents()
+    for student in students:
+        if student[0] == user_id:  # user_id is first column
+            return jsonify({
+                "user_id": student[0],
+                "firstName": student[1],
+                "lastName": student[2],
+                "accountStatus": student[3],
+                "yearOfStudy": student[4],
+                "degree": student[5],
+                "user_type": "student"
+            })
+    
+    # Try to find user in faculty
+    faculty_members = faculty_service.get_faculty_members()
+    for faculty in faculty_members:
+        if faculty[0] == user_id:  # user_id is first column
+            return jsonify({
+                "user_id": faculty[0],
+                "firstName": faculty[1],
+                "lastName": faculty[2],
+                "accountStatus": faculty[3],
+                "role": faculty[4],
+                "user_type": "faculty"
+            })
+    
+    return jsonify({"status": "Error", "message": "User not found"}), 404
+

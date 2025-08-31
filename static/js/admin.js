@@ -54,15 +54,18 @@ function loadUsers() {
       userTbody.innerHTML = "";
       data.users.forEach((user) => {
         const row = document.createElement("tr");
+        const statusClass =
+          user[3] === "active" ? "active-button" : "inactive-button";
+        const actionText = user[3] === "active" ? "Deactivate" : "Activate";
         row.innerHTML = `
         <td>${user[0]}</td>
         <td>${user[1]} ${user[2]}</td>
         <td>Student</td>
         <td>${user[5]}</td>
-        <td><button class="active-button">${user[3]}</button></td>
+        <td><button class="${statusClass}">${user[3]}</button></td>
         <td>
-          <button class="icon-btn">✏️</button>
-          <button class="deactive-button">Deactivate</button>
+          <button class="icon-btn edit-btn" onclick="editUser(${user[0]}, 'student')">✏️</button>
+          <button class="deactive-button" onclick="deactivateUser(${user[0]}, 'student')">${actionText}</button>
         </td>
       `;
         userTbody.appendChild(row);
@@ -73,15 +76,18 @@ function loadUsers() {
       facultyTbody.innerHTML = "";
       data.faculty_members.forEach((faculty) => {
         const row = document.createElement("tr");
+        const statusClass =
+          faculty[3] === "active" ? "active-button" : "inactive-button";
+        const actionText = faculty[3] === "active" ? "Deactivate" : "Activate";
         row.innerHTML = `
         <td>${faculty[0]}</td>
         <td>${faculty[1]} ${faculty[2]}</td>
         <td>Faculty</td>
         <td>${faculty[4]}</td>
-        <td><button class="active-button">${faculty[3]}</button></td>
+        <td><button class="${statusClass}">${faculty[3]}</button></td>
         <td>
-          <button class="icon-btn">✏️</button>
-          <button class="deactive-button">Deactivate</button>
+          <button class="icon-btn edit-btn" onclick="editUser(${faculty[0]}, 'faculty')">✏️</button>
+          <button class="deactive-button" onclick="deactivateUser(${faculty[0]}, 'faculty')">${actionText}</button>
         </td>
       `;
         facultyTbody.appendChild(row);
@@ -376,5 +382,198 @@ function closeModal() {
   const modal = document.querySelector(".modal");
   if (modal) {
     modal.remove();
+  }
+}
+
+function editUser(userId, userType) {
+  // Get user details first
+  AjaxHelper.get(
+    `/api/users/${userId}`,
+    function (user) {
+      if (userType === "student") {
+        // Get degrees for dropdown
+        fetch("/api/degrees")
+          .then((response) => response.json())
+          .then((degrees) => {
+            showEditUserModal(user, degrees);
+          })
+          .catch((error) => {
+            console.error("Error fetching degrees:", error);
+            showEditUserModal(user, []);
+          });
+      } else {
+        showEditUserModal(user, []);
+      }
+    },
+    function (error) {
+      alert("Failed to load user details");
+    }
+  );
+}
+
+function showEditUserModal(user, degrees = []) {
+  const modal = document.createElement("div");
+  modal.className = "modal";
+
+  let userSpecificFields = "";
+
+  if (user.user_type === "student") {
+    const degreeOptions = degrees
+      .map(
+        (degree) =>
+          `<option value="${degree[0]}" ${
+            degree[1] === user.degree ? "selected" : ""
+          }>${degree[1]}</option>`
+      )
+      .join("");
+
+    userSpecificFields = `
+      <div class="form-group">
+        <label for="editYearOfStudy">Year of Study:</label>
+        <input type="number" id="editYearOfStudy" name="yearOfStudy" value="${
+          user.yearOfStudy || ""
+        }" min="1" max="4" placeholder="Enter year of study">
+      </div>
+      
+      <div class="form-group">
+        <label for="editDegree">Degree:</label>
+        <select id="editDegree" name="degreeID">
+          <option value="">--Select Degree--</option>
+          ${degreeOptions}
+        </select>
+      </div>
+    `;
+  } else if (user.user_type === "faculty") {
+    userSpecificFields = `
+      <div class="form-group">
+        <label for="editRole">Role:</label>
+        <input type="text" id="editRole" name="role" value="${
+          user.role || ""
+        }" placeholder="Enter faculty role">
+      </div>
+    `;
+  }
+
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit ${
+          user.user_type.charAt(0).toUpperCase() + user.user_type.slice(1)
+        }</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="editUserForm">
+          <input type="hidden" id="editUserId" value="${user.user_id}">
+          <input type="hidden" id="editUserType" value="${user.user_type}">
+          
+          <div class="form-group">
+            <label for="editFirstName">First Name:</label>
+            <input type="text" id="editFirstName" name="firstName" value="${
+              user.firstName || ""
+            }" required placeholder="Enter first name">
+          </div>
+          
+          <div class="form-group">
+            <label for="editLastName">Last Name:</label>
+            <input type="text" id="editLastName" name="lastName" value="${
+              user.lastName || ""
+            }" required placeholder="Enter last name">
+          </div>
+          
+          <div class="form-group">
+            <label for="editEmail">Email:</label>
+            <input type="email" id="editEmail" name="email" value="${
+              user.email || ""
+            }" required placeholder="Enter email address">
+          </div>
+          
+          <div class="form-group">
+            <label for="editMobileNo">Mobile Number:</label>
+            <input type="tel" id="editMobileNo" name="mobileNo" value="${
+              user.mobileNo || ""
+            }" placeholder="Enter mobile number">
+          </div>
+          
+          ${userSpecificFields}
+          
+          <div class="form-actions">
+            <button type="button" onclick="updateUser()">Update User</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.style.display = "block";
+}
+
+function updateUser() {
+  const userId = document.getElementById("editUserId").value;
+  const userType = document.getElementById("editUserType").value;
+  const firstName = document.getElementById("editFirstName").value;
+  const lastName = document.getElementById("editLastName").value;
+  const email = document.getElementById("editEmail").value;
+  const mobileNo = document.getElementById("editMobileNo").value;
+
+  const userData = {
+    user_id: parseInt(userId),
+    user_type: userType,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    mobileNo: mobileNo,
+  };
+
+  // Add user-type specific fields
+  if (userType === "student") {
+    const yearOfStudy = document.getElementById("editYearOfStudy")?.value;
+    const degreeID = document.getElementById("editDegree")?.value;
+    if (yearOfStudy) userData.yearOfStudy = parseInt(yearOfStudy);
+    if (degreeID) userData.degreeID = parseInt(degreeID);
+  } else if (userType === "faculty") {
+    const role = document.getElementById("editRole")?.value;
+    if (role) userData.role = role;
+  }
+
+  AjaxHelper.put(
+    `/api/users/${userId}`,
+    userData,
+    function (response) {
+      alert(response.message);
+      closeModal();
+      loadUsers(); // Refresh the user list
+    },
+    function (error) {
+      alert("Failed to update user: " + (error.message || "Unknown error"));
+    }
+  );
+}
+
+function deactivateUser(userId, userType) {
+  const action = event.target.textContent.toLowerCase();
+  const confirmMessage = `Are you sure you want to ${action} this ${userType}?`;
+
+  if (confirm(confirmMessage)) {
+    const requestData = {
+      user_type: userType,
+    };
+
+    AjaxHelper.post(
+      `/api/users/${userId}/deactivate`,
+      requestData,
+      function (response) {
+        alert(response.message);
+        loadUsers(); // Refresh the user list
+      },
+      function (error) {
+        alert(
+          `Failed to ${action} ${userType}: ` +
+            (error.message || "Unknown error")
+        );
+      }
+    );
   }
 }

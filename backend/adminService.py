@@ -21,3 +21,25 @@ class AdminService:
         finally:
             cursor.close()
             conn.close()
+    
+    def updateAdmin(self, user_id, firstName=None, lastName=None, email=None, mobileNo=None):
+        try:
+            admin = Admin(self.db, firstName, lastName, email, mobileNo)
+            result = admin.update_user(user_id, firstName, lastName, email, mobileNo)
+            if result["status"] == "Success":
+                return result, 200
+            else:
+                return result, 400
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}, 500
+    
+    def deactivateAdmin(self, user_id):
+        try:
+            admin = Admin(self.db, None, None, None, None)
+            result = admin.deactivate_user(user_id)
+            if result["status"] == "Success":
+                return result, 200
+            else:
+                return result, 400
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}, 500

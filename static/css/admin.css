@@ -203,6 +203,22 @@ th {
 .active-button:hover {
   background: linear-gradient(90deg, #34a853 0%, #42c442 100%);
 }
+
+.inactive-button {
+  background: linear-gradient(90deg, #9e9e9e 0%, #bdbdbd 100%);
+  color: #fff;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(158, 158, 158, 0.08);
+  transition: background 0.2s;
+}
+.inactive-button:hover {
+  background: linear-gradient(90deg, #757575 0%, #9e9e9e 100%);
+}
 .deactive-button {
   background: linear-gradient(90deg, #ff5f5f 0%, #ffb3b3 100%);
   color: #fff;

@@ -34,3 +34,25 @@ class FacultyService:
         finally:
             cursor.close()
             conn.close()
+    
+    def updateFacultyMember(self, user_id, firstName=None, lastName=None, email=None, mobileNo=None, role=None):
+        try:
+            faculty_member = FacultyMember(self.db)
+            result = faculty_member.update_user(user_id, firstName, lastName, email, mobileNo, role)
+            if result["status"] == "Success":
+                return result, 200
+            else:
+                return result, 400
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}, 500
+    
+    def deactivateFacultyMember(self, user_id):
+        try:
+            faculty_member = FacultyMember(self.db)
+            result = faculty_member.deactivate_user(user_id)
+            if result["status"] == "Success":
+                return result, 200
+            else:
+                return result, 400
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}, 500

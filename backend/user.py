@@ -10,6 +10,14 @@ class User(ABC):
 
     def exists():
         pass
+    
+    @abstractmethod
+    def update_user(self):
+        pass
+    
+    @abstractmethod
+    def deactivate_user(self):
+        pass
 
 class Student(User):
     def __init__(self,db,firstName=None,lastName=None,email=None,mobileNo=None,yearOfStudy=None,degreeID=None):
@@ -72,6 +80,90 @@ class Student(User):
         conn.close()
         return result
         
+    def update_user(self, user_id, firstName=None, lastName=None, email=None, mobileNo=None, yearOfStudy=None, degreeID=None):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Check if user exists
+            cursor.execute("SELECT user_id FROM Users WHERE user_id = %s", (user_id,))
+            if not cursor.fetchone():
+                return {"status": "Error", "message": "User not found"}
+            
+            # Update Users table
+            update_fields = []
+            update_values = []
+            
+            if firstName is not None:
+                update_fields.append("firstName = %s")
+                update_values.append(firstName)
+            if lastName is not None:
+                update_fields.append("lastName = %s")
+                update_values.append(lastName)
+            if email is not None:
+                update_fields.append("email = %s")
+                update_values.append(email)
+            if mobileNo is not None:
+                update_fields.append("mobileNo = %s")
+                update_values.append(mobileNo)
+            
+            if update_fields:
+                query = f"UPDATE Users SET {', '.join(update_fields)} WHERE user_id = %s"
+                update_values.append(user_id)
+                cursor.execute(query, tuple(update_values))
+                conn.commit()
+            
+            # Update Student-specific fields
+            student_update_fields = []
+            student_update_values = []
+            
+            if yearOfStudy is not None:
+                student_update_fields.append("YearOfStudy = %s")
+                student_update_values.append(yearOfStudy)
+            if degreeID is not None:
+                student_update_fields.append("degree_ID = %s")
+                student_update_values.append(degreeID)
+            
+            if student_update_fields:
+                query2 = f"UPDATE Student SET {', '.join(student_update_fields)} WHERE student_Id = %s"
+                student_update_values.append(user_id)
+                cursor.execute(query2, tuple(student_update_values))
+                conn.commit()
+            
+            result = {"status": "Success", "message": "Student updated successfully"}
+        except Exception as e:
+            result = {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
+        return result
+    
+    def deactivate_user(self, user_id):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Check if user exists
+            cursor.execute("SELECT user_id, accountStatus FROM Users WHERE user_id = %s", (user_id,))
+            user = cursor.fetchone()
+            if not user:
+                return {"status": "Error", "message": "User not found"}
+            
+            current_status = user[1]
+            new_status = "inactive" if current_status == "active" else "active"
+            
+            # Update account status
+            query = "UPDATE Users SET accountStatus = %s WHERE user_id = %s"
+            cursor.execute(query, (new_status, user_id))
+            conn.commit()
+            
+            action = "deactivated" if new_status == "inactive" else "activated"
+            result = {"status": "Success", "message": f"Student {action} successfully", "new_status": new_status}
+        except Exception as e:
+            result = {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
+        return result
+        
 
     @staticmethod
     def exist(db, email):
@@ -109,6 +201,79 @@ class FacultyMember(User):
         conn.commit()
         
         return {"status": "Success", "message": "Faculty member added successfully"}
+
+    def update_user(self, user_id, firstName=None, lastName=None, email=None, mobileNo=None, role=None):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Check if user exists
+            cursor.execute("SELECT user_id FROM Users WHERE user_id = %s", (user_id,))
+            if not cursor.fetchone():
+                return {"status": "Error", "message": "User not found"}
+            
+            # Update Users table
+            update_fields = []
+            update_values = []
+            
+            if firstName is not None:
+                update_fields.append("firstName = %s")
+                update_values.append(firstName)
+            if lastName is not None:
+                update_fields.append("lastName = %s")
+                update_values.append(lastName)
+            if email is not None:
+                update_fields.append("email = %s")
+                update_values.append(email)
+            if mobileNo is not None:
+                update_fields.append("mobileNo = %s")
+                update_values.append(mobileNo)
+            
+            if update_fields:
+                query = f"UPDATE Users SET {', '.join(update_fields)} WHERE user_id = %s"
+                update_values.append(user_id)
+                cursor.execute(query, tuple(update_values))
+                conn.commit()
+            
+            # Update Faculty-specific fields
+            if role is not None:
+                query2 = "UPDATE FacultyStaff SET role = %s WHERE facultyMem_Id = %s"
+                cursor.execute(query2, (role, user_id))
+                conn.commit()
+            
+            result = {"status": "Success", "message": "Faculty member updated successfully"}
+        except Exception as e:
+            result = {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
+        return result
+    
+    def deactivate_user(self, user_id):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Check if user exists
+            cursor.execute("SELECT user_id, accountStatus FROM Users WHERE user_id = %s", (user_id,))
+            user = cursor.fetchone()
+            if not user:
+                return {"status": "Error", "message": "User not found"}
+            
+            current_status = user[1]
+            new_status = "inactive" if current_status == "active" else "active"
+            
+            # Update account status
+            query = "UPDATE Users SET accountStatus = %s WHERE user_id = %s"
+            cursor.execute(query, (new_status, user_id))
+            conn.commit()
+            
+            action = "deactivated" if new_status == "inactive" else "activated"
+            result = {"status": "Success", "message": f"Faculty member {action} successfully", "new_status": new_status}
+        except Exception as e:
+            result = {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
+        return result
 
     def get_faculty_members(self,cursor):
         query = """SELECT U.user_id, U.firstName, U.lastName, U.accountStatus, Fac.role
@@ -153,6 +318,73 @@ class Admin(User):
         conn.commit()
 
         return {"status": "Success", "message": "Admin added successfully"}
+    
+    def update_user(self, user_id, firstName=None, lastName=None, email=None, mobileNo=None):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Check if user exists
+            cursor.execute("SELECT user_id FROM Users WHERE user_id = %s", (user_id,))
+            if not cursor.fetchone():
+                return {"status": "Error", "message": "User not found"}
+            
+            # Update Users table
+            update_fields = []
+            update_values = []
+            
+            if firstName is not None:
+                update_fields.append("firstName = %s")
+                update_values.append(firstName)
+            if lastName is not None:
+                update_fields.append("lastName = %s")
+                update_values.append(lastName)
+            if email is not None:
+                update_fields.append("email = %s")
+                update_values.append(email)
+            if mobileNo is not None:
+                update_fields.append("mobileNo = %s")
+                update_values.append(mobileNo)
+            
+            if update_fields:
+                query = f"UPDATE Users SET {', '.join(update_fields)} WHERE user_id = %s"
+                update_values.append(user_id)
+                cursor.execute(query, tuple(update_values))
+                conn.commit()
+            
+            result = {"status": "Success", "message": "Admin updated successfully"}
+        except Exception as e:
+            result = {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
+        return result
+    
+    def deactivate_user(self, user_id):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+        try:
+            # Check if user exists
+            cursor.execute("SELECT user_id, accountStatus FROM Users WHERE user_id = %s", (user_id,))
+            user = cursor.fetchone()
+            if not user:
+                return {"status": "Error", "message": "User not found"}
+            
+            current_status = user[1]
+            new_status = "inactive" if current_status == "active" else "active"
+            
+            # Update account status
+            query = "UPDATE Users SET accountStatus = %s WHERE user_id = %s"
+            cursor.execute(query, (new_status, user_id))
+            conn.commit()
+            
+            action = "deactivated" if new_status == "inactive" else "activated"
+            result = {"status": "Success", "message": f"Admin {action} successfully", "new_status": new_status}
+        except Exception as e:
+            result = {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
+        return result
     
     @staticmethod
     def exist(db, email):
