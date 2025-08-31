@@ -41,8 +41,20 @@
       <section id="course-management" class="tab-content active">
         <div class="section-header">
           <h3>Course Management</h3>
-          <br />
-          <button class="add-btn" onclick="window.location.href='/course'"">+ Add Course</button>
+          <div class="button-group">
+            <button class="add-btn" onclick="window.location.href='/course'">
+              + Add Course
+            </button>
+            <button class="add-btn" onclick="window.location.href='/degrees'">
+              + Add Degree
+            </button>
+            <button
+              class="add-btn"
+              onclick="window.location.href='/departments'"
+            >
+              + Add Department
+            </button>
+          </div>
         </div>
 
         <table>
@@ -65,7 +77,9 @@
       <section id="user-management" class="tab-content">
         <div class="section-header">
           <h3>User Management</h3>
-          <button class="add-btn" onclick="window.location.href='/addUserForm'">+ Add User</button>
+          <button class="add-btn" onclick="window.location.href='/addUserForm'">
+            + Add User
+          </button>
         </div>
         <table>
           <thead>
@@ -93,13 +107,17 @@
         <div class="card-container" id="enrollment-report-container">
           <!-- Enrollment cards will be dynamically inserted here by JS -->
         </div>
-        <div id="enrollment-error" class="error" style="display:none;">No enrollment report data available.</div>
+        <div id="enrollment-error" class="error" style="display: none">
+          No enrollment report data available.
+        </div>
 
         <h3 class="report-title">Faculty Workload</h3>
         <div class="card-container" id="faculty-workload-container">
-          <!-- Faculty workload card will be dynamically inserted here by JS -->
+          <!-- Faculty workload cards will be dynamically inserted here by JS -->
         </div>
-        <div id="faculty-error" class="error" style="display:none;">No faculty workload report data available.</div>
+        <div id="faculty-error" class="error" style="display: none">
+          No faculty workload report data available.
+        </div>
       </section>
 
       <!-- Settings -->

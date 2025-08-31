@@ -57,35 +57,38 @@ class EnrollmentStatisticsReport(GenerateReport):
     
 
 class FacultyWorkloadReport(GenerateReport):
-    def __init__(self, faculty_id):
+    def __init__(self):
         self.db = dbconfig()
         self.conn = self.db.get_db_connection()
         self.cursor = self.conn.cursor()
-        self.faculty_id = faculty_id
 
     def getData(self):
-        # Execute query and fetch faculty workload data
+        # Execute query and fetch faculty workload data for all faculty
         query = """
-            SELECT COUNT(*) AS numberOfCourses, 
-            SUM(C.availableSeats) AS totalStudents
-            FROM Course AS C
-            JOIN FacultyStaff AS f ON C.facultyMem_Id = f.facultyMem_Id
-            WHERE f.facultyMem_Id = %s;
-            """
-        try:
-            self.cursor.execute(query, (self.faculty_id,))
-            result = self.cursor.fetchone()
-            return {
-                "numberOfCourses": result[0] or 0,
-                "totalStudents": result[1] or 0
-            }
-        except Exception as e:
-            return {"error": str(e)}
+            SELECT f.facultyMem_Id, d.deptName, COUNT(C.course_Id) AS numberOfCourses,
+                   SUM(C.capacity - C.availableSeats) AS numberOfStudents
+            FROM FacultyStaff AS f
+            LEFT JOIN Course AS C ON f.facultyMem_Id = C.facultyMem_Id
+            JOIN Department AS d ON C.dept_Id = d.dept_Id
+            GROUP BY f.facultyMem_Id, d.deptName;
+        """
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        return results
 
     def processData(self):
-        return self.getData()
+        # Process the data to a list of dicts
+        results = self.getData()
+        processed = []
+        for row in results:
+            processed.append({
+                "facultyId": row[0],
+                "facultyName": row[1],
+                "numberOfCourses": row[2] or 0,
+                "numberOfStudents": row[3] or 0
+            })
+        return processed
 
     def outputData(self):
-        # Logic to output the processed faculty workload data
-        facultyCourses = self.processData()
-        return facultyCourses
+        # Output the processed faculty workload data for all faculty
+        return self.processData()

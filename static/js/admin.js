@@ -147,29 +147,28 @@ function loadReports() {
       );
       const facultyError = document.getElementById("faculty-error");
       facultyContainer.innerHTML = "";
-      if (data.fac_report_data && !data.fac_report_data.error) {
+      if (
+        Array.isArray(data.faculty_workload) &&
+        data.faculty_workload.length > 0
+      ) {
         facultyError.style.display = "none";
-        const card = document.createElement("div");
-        card.className = "report-card";
-        card.innerHTML = `
-          <div class="card-header">
-            <span class="course-name">Faculty Workload</span>
-          </div>
-          <div class="card-body">
-            <div class="card-row"><span class="label">Number of Courses:</span> <span>${
-              data.fac_report_data.numberOfCourses || "-"
-            }</span></div>
-            <div class="card-row"><span class="label">Total Students:</span> <span>${
-              data.fac_report_data.totalStudents || "-"
-            }</span></div>
-          </div>
-        `;
-        facultyContainer.appendChild(card);
+        data.faculty_workload.forEach((fac) => {
+          const card = document.createElement("div");
+          card.className = "report-card";
+          card.innerHTML = `
+            <div class="card-header">
+              <span>Faculty: ${fac.facultyName}</span>
+              <span>ID: ${fac.facultyId}</span>
+            </div>
+            <div class="card-body">
+              <div class="card-row"><span class="label">Number of Courses:</span> <span>${fac.numberOfCourses}</span></div>
+              <div class="card-row"><span class="label">Number of Students:</span> <span>${fac.numberOfStudents}</span></div>
+            </div>
+          `;
+          facultyContainer.appendChild(card);
+        });
       } else {
         facultyError.style.display = "block";
-        if (data.fac_report_data && data.fac_report_data.error) {
-          facultyError.textContent = data.fac_report_data.error;
-        }
       }
     },
     function (error) {

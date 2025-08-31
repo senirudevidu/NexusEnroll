@@ -145,9 +145,9 @@ def api_users():
 def api_reports():
     enrollmentReport = EnrollmentStatisticsReport(3)
     enrollment_data = enrollmentReport.outputData()
-    facultyWorkLoadReport = FacultyWorkloadReport(8)
+    facultyWorkLoadReport = FacultyWorkloadReport()
     fac_report_data = facultyWorkLoadReport.outputData()
-    return jsonify({'enrollment_data': enrollment_data, 'fac_report_data': fac_report_data})
+    return jsonify({'enrollment_data': enrollment_data, 'faculty_workload': fac_report_data})
 
 @bp.route('/api/courses')
 def api_courses():

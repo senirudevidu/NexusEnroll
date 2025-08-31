@@ -239,7 +239,8 @@ th {
   margin-bottom: 10px;
   min-width: 260px;
   max-width: 370px;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
   vertical-align: top;
   transition: box-shadow 0.2s;
 }
@@ -253,6 +254,11 @@ th {
 
 .report-actions {
   margin-top: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
 }
 
 .card-container {
