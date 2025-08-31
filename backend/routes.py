@@ -13,6 +13,10 @@ from backend.reports import FacultyWorkloadReport,EnrollmentStatisticsReport
 
 bp = Blueprint("routes",__name__)
 
+@bp.route('/admin')
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
+
 @bp.route('/addUserForm')
 def add_user_form():
     degree_service = DegreeService(dbconfig())
@@ -129,12 +133,6 @@ def add_course():
     result = service.addCourse(courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id, addedBy)
     return jsonify(result)
 
-@bp.route('/displayCourses')
-def display_courses():
-    service = CourseService(dbconfig())
-    courses = service.getAllCourses()
-    return render_template('displayCourse.html', courses=courses)
-
 @bp.route('/displayUsers')
 def display_users():
     service = StudentService(dbconfig())
@@ -154,3 +152,9 @@ def display_reports():
     facultyWorkLoadReport = FacultyWorkloadReport(8)
     fac_report_data = facultyWorkLoadReport.outputData()
     return render_template('reports.html', enrollment_data=enrollment_data, fac_report_data=fac_report_data)
+
+@bp.route('/api/courses')
+def api_courses():
+    service = CourseService(dbconfig())
+    courses = service.getAllCourses()
+    return jsonify(courses)

@@ -1,0 +1,195 @@
+<!-- admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusEnroll Admin</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/admin.css') }}"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="logo">
+        NexusEnroll <span class="portal">Administrator Portal</span>
+      </div>
+      <button class="back-btn">Back to Main</button>
+    </header>
+
+    <!-- Welcome Section -->
+    <div class="welcome">
+      <h2>Welcome, Admin Richardson</h2>
+      <p>Administrator ID: ADM2024001 | University of California</p>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button onclick="showTab('course-management')" class="active">
+        Course Management
+      </button>
+      <button onclick="showTab('user-management')">User Management</button>
+      <button onclick="showTab('reports')">Reports & Analytics</button>
+      <button onclick="showTab('settings')">System Settings</button>
+    </nav>
+
+    <!-- Content -->
+    <main class="content">
+      <!-- Course Management -->
+      <section id="course-management" class="tab-content active">
+        <div class="section-header">
+          <h3>Course Management</h3>
+          <br />
+          <button class="add-btn" onclick="window.location.href='/course'"">+ Add Course</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Course Name</th>
+              <th>Instructor</th>
+              <th>Department</th>
+              <th>Enrollment</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="course-table-body">
+            <!-- Dynamic rows will be inserted here -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- User Management -->
+      <section id="user-management" class="tab-content">
+        <div class="section-header">
+          <h3>User Management</h3>
+          <button class="add-btn">+ Add User</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ST2024001</td>
+              <td>Alex Thompson</td>
+              <td>Student</td>
+              <td>Computer Science</td>
+              <td><button class="active-button">Active</button></td>
+              <td>
+                <button class="icon-btn">✏️</button>
+                <button class="deactive-button">Deactivate</button>
+              </td>
+            </tr>
+            <tr>
+              <td>FAC2024001</td>
+              <td>Dr. Sarah Johnson</td>
+              <td>Faculty</td>
+              <td>Computer Science</td>
+              <td><button class="active-button">Active</button></td>
+              <td>
+                <button class="icon-btn">✏️</button>
+                <button class="deactive-button">Deactivate</button>
+              </td>
+            </tr>
+            <tr>
+              <td>ST2024002</td>
+              <td>Sarah Wilson</td>
+              <td>Student</td>
+              <td>Mathematics</td>
+              <td><button class="active-button">Active</button></td>
+              <td>
+                <button class="icon-btn">✏️</button>
+                <button class="deactive-button">Deactivate</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Reports -->
+      <section id="reports" class="tab-content">
+        <h3>Reports & Analytics</h3>
+        <div class="report-card">
+          <h4>Department Analytics</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Total Courses</th>
+                <th>Total Enrolled</th>
+                <th>Avg Capacity</th>
+                <th>Faculty Workload</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Computer Science</td>
+                <td>8</td>
+                <td>156</td>
+                <td>87%</td>
+                <td>12.5 hrs/week</td>
+              </tr>
+              <tr>
+                <td>Mathematics</td>
+                <td>12</td>
+                <td>210</td>
+                <td>92%</td>
+                <td>14.2 hrs/week</td>
+              </tr>
+              <tr>
+                <td>English</td>
+                <td>6</td>
+                <td>98</td>
+                <td>78%</td>
+                <td>11.8 hrs/week</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="report-actions">
+            <button class="add-btn">Export to CSV</button>
+            <button class="add-btn">Generate Full Report</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="settings" class="tab-content">
+        <h3>System Settings</h3>
+        <div class="settings-card">
+          <h4>Enrollment Settings</h4>
+          <div class="setting-item">
+            <span>Auto-enroll from waitlist</span>
+            <button class="add-btn">Configure</button>
+          </div>
+          <div class="setting-item">
+            <span>Registration periods</span>
+            <button class="add-btn">Manage</button>
+          </div>
+
+          <h4>Notification Settings</h4>
+          <div class="setting-item">
+            <span>Email notifications</span>
+            <button class="add-btn">Configure</button>
+          </div>
+          <div class="setting-item">
+            <span>System alerts</span>
+            <button class="add-btn">Manage</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ajaxHelper.js') }}"></script>
+  </body>
+</html>
