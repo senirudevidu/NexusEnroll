@@ -13,6 +13,10 @@ from backend.presentation.reports import FacultyWorkloadReport, EnrollmentStatis
 from backend.service.userService import UserService
 bp = Blueprint("routes",__name__)
 
+@bp.route('/test-catalog')
+def test_catalog():
+    return render_template('test_course_catalog.html')
+
 @bp.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -41,21 +45,21 @@ def index():
 
 @bp.route('/admin')
 def admin_dashboard():
-    if session.get('username'):
-        return render_template('admin_dashboard.html', username=session['username'])
+    if session.get('firstName'):
+        return render_template('admin_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
     return redirect(url_for('index'))
 
 @bp.route('/faculty')
 def faculty_dashboard():
-    if session.get('username'):
-        return render_template('faculty_dashboard.html', username=session['username'])
+    if session.get('firstName'):
+        return render_template('faculty_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
     return redirect(url_for('index'))
 
 
 @bp.route('/student')
 def student_dashboard():
-    if session.get('username'):
-        return render_template('student_dashboard.html', username=session['username'])
+    if session.get('firstName'):
+        return render_template('student_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
     return redirect(url_for('index'))
 
 @bp.route('/addUserForm')
@@ -193,6 +197,39 @@ def api_reports():
 def api_courses():
     service = CourseService(dbconfig())
     courses = service.getAllCourses()
+    return jsonify(courses)
+
+@bp.route('/api/courses/search')
+def api_search_courses():
+    # Get query parameters
+    department = request.args.get('department')
+    course_number = request.args.get('course_number')
+    keyword = request.args.get('keyword')
+    instructor_name = request.args.get('instructor_name')
+    
+    service = CourseService(dbconfig())
+    courses = service.searchCourses(department, course_number, keyword, instructor_name)
+    
+    if isinstance(courses, dict) and courses.get("status") == "Error":
+        return jsonify(courses), 500
+    
+    return jsonify(courses)
+
+@bp.route('/api/courses/department-instructor')
+def api_courses_by_department_instructor():
+    # Get query parameters
+    department = request.args.get('department')
+    instructor_name = request.args.get('instructor_name')
+    
+    if not department or not instructor_name:
+        return jsonify({"status": "Error", "message": "Both department and instructor_name parameters are required"}), 400
+    
+    service = CourseService(dbconfig())
+    courses = service.getCoursesByDepartmentAndInstructor(department, instructor_name)
+    
+    if isinstance(courses, dict) and courses.get("status") == "Error":
+        return jsonify(courses), 500
+    
     return jsonify(courses)
 
 @bp.route('/api/courses/<int:course_id>')

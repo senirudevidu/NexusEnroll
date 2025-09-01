@@ -15,7 +15,7 @@
 
   <!-- Welcome Section -->
   <div class="welcome">
-    <h2>Welcome, Alex Thompson</h2>
+    <h2>Welcome, {{ firstName }} {{ lastName }}</h2>
     <p>Student ID: ST234001 | Major: Computer Science</p>
   </div>
 
@@ -32,27 +32,63 @@
     <!-- Course Catalog -->
     <section id="catalog" class="tab-content active">
       <h3>Course Catalog</h3>
-      <input type="text" class="search-bar" placeholder="Search courses, instructors, or codes...">
-
-      <div class="course-card">
-        <h4>CS101: Introduction to Computer Science</h4>
-        <p>Dr. Sarah Johnson | MWF 9:00-10:00 AM | Tech Building 101</p>
-        <p><b>Seats:</b> 25/30 | <b>Credits:</b> 3</p>
-        <button onclick="enroll('CS101','MWF 9:00-10:00 AM','Tech Building 101')">Enroll</button>
+      
+      <!-- Search Filters -->
+      <div class="search-filters">
+        <div class="filter-row">
+          <input type="text" id="searchKeyword" class="search-input" placeholder="Search courses, keywords...">
+          <input type="text" id="searchInstructor" class="search-input" placeholder="Instructor name...">
+        </div>
+        <div class="filter-row">
+          <select id="departmentFilter" class="filter-select">
+            <option value="">All Departments</option>
+          </select>
+          <input type="text" id="courseNumber" class="search-input" placeholder="Course number...">
+          <button onclick="searchCourses()" class="search-btn">Search</button>
+          <button onclick="clearFilters()" class="clear-btn">Clear</button>
+        </div>
+        
+        <!-- Special Use Case Section -->
+        <div class="use-case-section">
+          <h4>Find Computer Science Courses by Professor</h4>
+          <div class="use-case-filters">
+            <select id="useCaseDepartment" class="filter-select">
+              <option value="">Select Department</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Software Engineering">Software Engineering</option>
+            </select>
+            <input type="text" id="useCaseInstructor" class="search-input" placeholder="Professor name...">
+            <button onclick="searchByDepartmentAndInstructor()" class="search-btn">Find Courses</button>
+          </div>
+        </div>
       </div>
 
-      <div class="course-card">
-        <h4>MATH201: Calculus II</h4>
-        <p>Prof. Michael Lee | TTh 11:00-12:30 PM | Math Hall 205</p>
-        <p><b>Seats:</b> 18/25 | <b>Credits:</b> 4</p>
-        <button onclick="enroll('MATH201','TTh 11:00-12:30 PM','Math Hall 205')">Enroll</button>
+      <!-- Course Results -->
+      <div id="courseResults" class="course-results">
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+          <div class="spinner"></div>
+          <p>Loading courses...</p>
+        </div>
+        
+        <div id="noResults" class="no-results" style="display: none;">
+          <p>No courses found matching your criteria.</p>
+        </div>
+        
+        <div id="courseList" class="course-list">
+          <!-- Courses will be dynamically loaded here -->
+        </div>
       </div>
 
-      <div class="course-card full">
-        <h4>ENG101: Academic Writing</h4>
-        <p>Dr. Emily Davis | MWF 2:00-3:00 PM | Liberal Arts 150</p>
-        <p><b>Seats:</b> 29/30 | <b>Credits:</b> 3</p>
-        <button disabled>Full</button>
+      <!-- Sort Options -->
+      <div class="sort-options">
+        <label>Sort by:</label>
+        <select id="sortBy" onchange="sortCourses()">
+          <option value="courseName">Course Name</option>
+          <option value="department">Department</option>
+          <option value="instructor">Instructor</option>
+          <option value="availability">Available Seats</option>
+        </select>
       </div>
     </section>
 
