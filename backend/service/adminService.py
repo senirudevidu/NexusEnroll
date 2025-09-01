@@ -1,4 +1,4 @@
-from backend.user import Admin, AdminFactory
+from backend.dal.user import Admin, AdminFactory
 
 class AdminService:
     def __init__(self, db):

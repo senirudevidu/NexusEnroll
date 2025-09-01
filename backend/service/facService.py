@@ -1,4 +1,4 @@
-from backend.user import FacultyMemberFactory,FacultyMember
+from backend.dal.user import FacultyMemberFactory, FacultyMember
 
 class FacultyService:
     def __init__(self, db):

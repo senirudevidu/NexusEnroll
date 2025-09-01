@@ -1,4 +1,4 @@
-from backend.degree import Degree
+from backend.dal.degree import Degree
 
 class DegreeService:
     def __init__(self, db):

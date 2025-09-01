@@ -1,15 +1,15 @@
 from turtle import st
 from flask import request,Blueprint,jsonify,render_template,session
-from backend.adminService import AdminService
-from backend.course import Course
-from backend.courseService import CourseService
-from backend.dbconfig import dbconfig
-from backend.departmentService import DepartmentService
-from backend.facService import FacultyService
-from backend.studentService import StudentService
-from backend.degree import Degree
-from backend.degreeService import DegreeService
-from backend.reports import FacultyWorkloadReport,EnrollmentStatisticsReport
+from backend.service.adminService import AdminService
+from backend.dal.course import Course
+from backend.service.courseService import CourseService
+from backend.dal.dbconfig import dbconfig
+from backend.service.departmentService import DepartmentService
+from backend.service.facService import FacultyService
+from backend.service.studentService import StudentService
+from backend.dal.degree import Degree
+from backend.service.degreeService import DegreeService
+from backend.presentation.reports import FacultyWorkloadReport, EnrollmentStatisticsReport
 
 bp = Blueprint("routes",__name__)
 
@@ -124,7 +124,6 @@ def add_degree():
     service = Degree(dbconfig())
     result = service.addDegree(degree_name, credit, department_name)
     return jsonify(result)
-
 
 @bp.route('/addCourse',methods=['POST'])
 def add_course():

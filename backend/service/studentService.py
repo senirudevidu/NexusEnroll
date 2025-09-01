@@ -1,4 +1,4 @@
-from backend.user import Student, StudentFactory
+from backend.dal.user import Student, StudentFactory
 
 class StudentService:
     def __init__(self,db):

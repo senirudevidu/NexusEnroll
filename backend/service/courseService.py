@@ -1,4 +1,4 @@
-from backend.course import Course
+from backend.dal.course import Course
 
 
 class CourseService:

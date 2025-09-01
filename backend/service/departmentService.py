@@ -1,4 +1,4 @@
-from backend.department import DepartmentFactory , Department
+from backend.dal.department import DepartmentFactory, Department
 
 class DepartmentService:
     def __init__(self,db):

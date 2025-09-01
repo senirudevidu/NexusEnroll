@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from backend.dbconfig import dbconfig
+from backend.dal.dbconfig import dbconfig
 class GenerateReport(ABC):
     @abstractmethod
     def getData(self):
