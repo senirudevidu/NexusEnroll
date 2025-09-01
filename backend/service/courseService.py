@@ -73,3 +73,29 @@ class CourseService:
         finally:
             cursor.close()
             conn.close()
+    
+    def searchCourses(self, department=None, course_number=None, keyword=None, instructor_name=None):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+
+        try:
+            result = self.Course.searchCourses(cursor, department, course_number, keyword, instructor_name)
+            return result
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
+    
+    def getCoursesByDepartmentAndInstructor(self, department, instructor_name):
+        conn = self.db.get_db_connection()
+        cursor = conn.cursor()
+
+        try:
+            result = self.Course.getCoursesByDepartmentAndInstructor(cursor, department, instructor_name)
+            return result
+        except Exception as e:
+            return {"status": "Error", "message": str(e)}
+        finally:
+            cursor.close()
+            conn.close()
