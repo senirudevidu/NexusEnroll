@@ -27,7 +27,7 @@ def index():
         if login_result['status'] == 'success':
             session['username'] = username
             session['user_id'] = login_result['user_id']
-            session['username'] = login_result['username']
+            session['username'] = username
             session['firstName'] = login_result['firstName']
             session['lastName'] = login_result['lastName']
             session['module'] = login_result['module']
