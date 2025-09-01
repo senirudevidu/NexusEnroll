@@ -22,6 +22,7 @@ def index():
         userService = UserService()
         login_result = userService.login(username, password, userType)
         if login_result['status'] == 'success':
+            session['username'] = username
             session['user_id'] = login_result['user_id']
             session['firstName'] = login_result['firstName']
             session['lastName'] = login_result['lastName']
