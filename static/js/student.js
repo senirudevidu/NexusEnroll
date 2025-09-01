@@ -9,9 +9,15 @@ function showTab(tabId) {
     .forEach((btn) => btn.classList.remove("active"));
   event.target.classList.add("active");
 
-  // Load courses when catalog tab is shown
+  // Load appropriate content when tabs are shown
   if (tabId === "catalog") {
     loadAllCourses();
+  } else if (tabId === "enrollment") {
+    // Trigger enrollment manager refresh if it exists
+    if (window.enrollmentManager) {
+      window.enrollmentManager.loadStudentEnrollments();
+      window.enrollmentManager.loadAvailableCourses();
+    }
   }
 }
 
@@ -287,10 +293,16 @@ function showError(message) {
 }
 
 function enrollInCourse(courseId, courseName) {
-  // This would connect to the enrollment system
-  if (confirm(`Are you sure you want to enroll in ${courseName}?`)) {
-    // Here you would make an API call to enroll the student
-    alert(`Enrollment request submitted for ${courseName}`);
+  // Use the new enrollment manager if available
+  if (window.enrollmentManager) {
+    window.enrollmentManager.validateAndEnroll(courseId, courseName);
+  } else {
+    // Fallback to simple confirmation
+    if (confirm(`Are you sure you want to enroll in ${courseName}?`)) {
+      alert(
+        `Enrollment request submitted for ${courseName}. Please check the Enrollment Management tab for details.`
+      );
+    }
   }
 }
 

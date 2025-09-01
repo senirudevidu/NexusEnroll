@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NexusEnroll Student</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/enrollment.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/scheduleProgress.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
   <!-- Header -->
@@ -22,6 +25,7 @@
   <!-- Tabs -->
   <nav class="tabs">
     <button onclick="showTab('catalog')" class="active">Course Catalog</button>
+    <button onclick="showTab('enrollment')">Enrollment Management</button>
     <button onclick="showTab('schedule')">My Schedule</button>
     <button onclick="showTab('progress')">Academic Progress</button>
     <button onclick="showTab('enrolled')">Enrolled Courses</button>
@@ -92,84 +96,135 @@
       </div>
     </section>
 
+    <!-- Enrollment Management -->
+    <section id="enrollment" class="tab-content">
+      <div class="enrollment-container">
+        <!-- Enrollment Summary -->
+        <div class="enrollment-section">
+          <div class="section-header">
+            <h3 class="section-title">Enrollment Summary</h3>
+            <button class="refresh-btn" id="refreshEnrollments">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+          <div id="enrollmentSummary" class="enrollment-summary">
+            <!-- Summary will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Available Courses for Enrollment -->
+        <div class="enrollment-section">
+          <div class="section-header">
+            <h3 class="section-title">Available Courses</h3>
+          </div>
+          
+          <!-- Search and Filter -->
+          <div class="search-filter-section">
+            <div class="filter-row">
+              <input type="text" id="courseSearchKeyword" class="search-input" placeholder="Search courses, instructors...">
+              <select id="courseSearchDepartment" class="filter-select">
+                <option value="">All Departments</option>
+              </select>
+              <button id="searchAvailableCourses" class="search-btn">
+                <i class="fas fa-search"></i> Search
+              </button>
+              <button onclick="enrollmentManager.loadAvailableCourses()" class="clear-btn">
+                <i class="fas fa-times"></i> Clear
+              </button>
+            </div>
+          </div>
+
+          <div id="availableCoursesList">
+            <!-- Available courses will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Current Enrollments -->
+        <div class="enrollment-section">
+          <div class="section-header">
+            <h3 class="section-title">My Current Enrollments</h3>
+          </div>
+          <div id="enrollmentsList">
+            <!-- Current enrollments will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- My Schedule -->
     <section id="schedule" class="tab-content">
-      <h3>My Weekly Schedule</h3>
-      <div id="schedule-list"></div>
       <div class="schedule-container">
-    <h2>My Weekly Schedule</h2>
-    <div id="schedule">
-      <!-- Existing courses -->
-      <div class="course-card">
-        <strong>CS101</strong> – Tech Building 101 <br>
-        <span class="days-time">MWF | 9:00 - 10:00 AM</span>
+        <div class="schedule-header">
+          <h2 class="schedule-title">My Weekly Schedule</h2>
+          <div class="schedule-controls">
+            <div class="semester-selector">
+              <label for="semesterSelect">Semester:</label>
+              <select id="semesterSelect">
+                <option value="">Current Semester</option>
+              </select>
+            </div>
+            <div class="view-toggle">
+              <button id="calendarViewBtn" class="view-btn active">
+                <i class="fas fa-calendar"></i> Calendar
+              </button>
+              <button id="listViewBtn" class="view-btn">
+                <i class="fas fa-list"></i> List
+              </button>
+            </div>
+            <button id="refreshSchedule" class="refresh-btn">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+        </div>
+        
+        <!-- Schedule Summary -->
+        <div id="scheduleSummary">
+          <!-- Summary cards will be populated by JavaScript -->
+        </div>
+        
+        <!-- Calendar View -->
+        <div id="scheduleCalendar" class="calendar-view">
+          <!-- Weekly calendar grid will be populated by JavaScript -->
+        </div>
+        
+        <!-- List View -->
+        <div id="scheduleList" class="schedule-list" style="display: none;">
+          <!-- Schedule list will be populated by JavaScript -->
+        </div>
       </div>
-      <div class="course-card">
-        <strong>MATH201</strong> – Math Hall 205 <br>
-        <span class="days-time">TTh | 11:00 - 12:30 PM</span>
-      </div>
-    </div>
-
-    <!-- Add Course Form -->
-    <form id="courseForm">
-      <input type="text" id="code" placeholder="Course Code (e.g. PHYS150)" required>
-      <input type="text" id="location" placeholder="Location (e.g. Science Hall 310)" required>
-      <input type="text" id="days" placeholder="Days (e.g. MWF, TTh)" required>
-      <input type="text" id="time" placeholder="Time (e.g. 2:00 - 3:00 PM)" required>
-      <button type="submit">+ Add Course</button>
-    </form>
-  </div>
-
     </section>
 
     <!-- Academic Progress -->
     <section id="progress" class="tab-content">
-      <h3>Academic Progress</h3>
-      <p>GPA: <b>3.7</b></p>
-      <div class="progress-bar"><div class="fill" style="width:75%"></div></div>
       <div class="progress-container">
-    <h2>Academic Progress</h2>
-    <div id="progress">
-      <!-- Existing courses -->
-      <div class="course-card">
-        <div class="course-info">
-          <strong>CS100: Intro to Programming</strong><br>
-          Fall 2024 – 3 credits
+        <div class="progress-header">
+          <h2 class="progress-title">Academic Progress</h2>
+          <div class="student-info">Track your academic journey and degree requirements</div>
+          <button id="refreshProgress" class="refresh-btn">
+            <i class="fas fa-sync-alt"></i> Refresh Progress
+          </button>
         </div>
-        <span class="grade">A</span>
-      </div>
-      <div class="course-card">
-        <div class="course-info">
-          <strong>MATH101: Calculus I</strong><br>
-          Fall 2024 – 4 credits
+        
+        <!-- Progress Overview -->
+        <div id="progressOverview">
+          <!-- Progress cards and progress bar will be populated by JavaScript -->
         </div>
-        <span class="grade">B+</span>
-      </div>
-      <div class="course-card">
-        <div class="course-info">
-          <strong>ENG100: Composition</strong><br>
-          Fall 2024 – 3 credits
+        
+        <!-- Completed Courses -->
+        <div id="completedCourses">
+          <!-- Completed courses list will be populated by JavaScript -->
         </div>
-        <span class="grade">A-</span>
+        
+        <!-- Pending Requirements -->
+        <div id="pendingRequirements">
+          <!-- Pending degree requirements will be populated by JavaScript -->
+        </div>
+        
+        <!-- Grade Distribution -->
+        <div id="gradeDistribution">
+          <!-- Grade distribution chart will be populated by JavaScript -->
+        </div>
       </div>
-    </div>
-
-    <!-- Summary -->
-    <div class="summary">
-      Total Credits Completed: <span id="totalCredits">10</span><br>
-      Current GPA: <span id="gpa">3.7</span>
-    </div>
-
-    <!-- Add Course Form -->
-    <form id="courseForm">
-      <input type="text" id="code" placeholder="Course Code (e.g. PHYS150)" required>
-      <input type="text" id="title" placeholder="Course Title (e.g. Physics I)" required>
-      <input type="text" id="semester" placeholder="Semester (e.g. Spring 2025)" required>
-      <input type="number" id="credits" placeholder="Credits" required>
-      <input type="text" id="grade" placeholder="Grade (e.g. A, B+)" required>
-      <button type="submit">+ Add Completed Course</button>
-    </form>
-  </div>
     </section>
 
     <!-- Enrolled Courses -->
@@ -241,6 +296,30 @@
     </section>
   </main>
 
+  <script>
+    // Store student session data
+    sessionStorage.setItem('student_id', '{{ session.get("user_id", 1) }}');
+  </script>
   <script src="{{ url_for('static', filename='js/student.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/enrollment.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/scheduleProgress.js') }}"></script>
+  <script>
+    // Initialize schedule and progress when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize enrollment manager first
+      const studentId = sessionStorage.getItem('student_id');
+      
+      // Initialize enrollment manager if it doesn't exist
+      if (typeof enrollmentManager === 'undefined') {
+        window.enrollmentManager = new EnrollmentManager();
+        enrollmentManager.initialize(studentId);
+      }
+      
+      // Initialize schedule and progress manager
+      if (typeof initializeScheduleProgress === 'function') {
+        initializeScheduleProgress(studentId);
+      }
+    });
+  </script>
 </body>
 </html>

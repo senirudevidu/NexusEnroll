@@ -1,0 +1,631 @@
+/* ============ SCHEDULE MANAGEMENT STYLES ============ */
+
+.schedule-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin: 20px 0;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.schedule-title {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.semester-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.semester-selector label {
+  font-weight: 500;
+  color: #555;
+}
+
+.semester-selector select {
+  padding: 8px 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.semester-selector select:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+/* Weekly Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(7, 1fr);
+  gap: 1px;
+  background: #e1e8ed;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.time-slot,
+.day-header,
+.schedule-cell {
+  background: white;
+  padding: 12px 8px;
+  border: none;
+}
+
+.day-header {
+  background: #3498db;
+  color: white;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+}
+
+.time-slot {
+  background: #f8f9fa;
+  font-size: 12px;
+  font-weight: 500;
+  color: #666;
+  text-align: center;
+  border-right: 2px solid #e1e8ed;
+}
+
+.schedule-cell {
+  min-height: 60px;
+  position: relative;
+  vertical-align: top;
+}
+
+.course-block {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  margin: 2px 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.course-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.course-block .course-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+  font-size: 12px;
+}
+
+.course-block .course-details {
+  opacity: 0.9;
+  font-size: 10px;
+}
+
+.course-block .course-location {
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* Different colors for different course types */
+.course-block.core {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.course-block.elective {
+  background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.course-block.lab {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+/* Schedule List View (Alternative to Calendar) */
+.schedule-list {
+  display: none; /* Hidden by default, shown when calendar is not preferred */
+}
+
+.schedule-day {
+  margin-bottom: 24px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.day-title {
+  background: #34495e;
+  color: white;
+  padding: 12px 20px;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.day-courses {
+  padding: 16px 20px;
+}
+
+.course-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.course-item:last-child {
+  border-bottom: none;
+}
+
+.course-info h4 {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.course-info p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.course-time {
+  text-align: right;
+  color: #34495e;
+  font-weight: 500;
+}
+
+.course-location-info {
+  color: #95a5a6;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+/* ============ ACADEMIC PROGRESS STYLES ============ */
+
+.progress-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin: 20px 0;
+}
+
+.progress-header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.progress-title {
+  color: #2c3e50;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.student-info {
+  color: #7f8c8d;
+  font-size: 1rem;
+}
+
+/* Progress Overview Cards */
+.progress-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.progress-card {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #dee2e6;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.progress-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.progress-card.primary {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+}
+
+.progress-card.success {
+  background: linear-gradient(135deg, #27ae60, #229954);
+  color: white;
+}
+
+.progress-card.warning {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+}
+
+.progress-card.info {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+}
+
+.progress-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  margin: 24px 0;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.progress-bar-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 24px;
+  background: #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #27ae60, #2ecc71);
+  border-radius: 12px;
+  transition: width 0.8s ease;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 50%,
+    transparent 75%,
+    rgba(255, 255, 255, 0.2) 75%
+  );
+  background-size: 20px 20px;
+  animation: progress-stripes 1s linear infinite;
+}
+
+@keyframes progress-stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 0;
+  }
+}
+
+/* Completed Courses Section */
+.completed-courses {
+  margin: 32px 0;
+}
+
+.section-title {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #3498db;
+}
+
+.courses-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.completed-course-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.completed-course-item:hover {
+  background: #e9ecef;
+}
+
+.course-header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.course-name-grade {
+  flex: 1;
+}
+
+.course-name-grade h4 {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.course-semester {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+}
+
+.grade-display {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 50px;
+  text-align: center;
+}
+
+.grade-a {
+  background: #d4edda;
+  color: #155724;
+}
+.grade-b {
+  background: #cce7ff;
+  color: #004085;
+}
+.grade-c {
+  background: #fff3cd;
+  color: #856404;
+}
+.grade-d {
+  background: #f8d7da;
+  color: #721c24;
+}
+.grade-f {
+  background: #f5c6cb;
+  color: #721c24;
+}
+
+.course-details-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Pending Requirements Section */
+.pending-requirements {
+  margin: 32px 0;
+}
+
+.requirements-list {
+  display: grid;
+  gap: 12px;
+}
+
+.requirement-item {
+  background: #fff3e0;
+  border: 1px solid #ffcc80;
+  border-left: 4px solid #ff9800;
+  border-radius: 8px;
+  padding: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.requirement-item.core {
+  background: #ffebee;
+  border-color: #ffcdd2;
+  border-left-color: #f44336;
+}
+
+.requirement-item:hover {
+  background: #ffe0b2;
+}
+
+.requirement-item.core:hover {
+  background: #ffcdd2;
+}
+
+.requirement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.requirement-name {
+  color: #2c3e50;
+  font-weight: 600;
+  margin: 0;
+}
+
+.requirement-type {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.requirement-type.core {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.requirement-type.elective {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.requirement-description {
+  color: #555;
+  font-size: 0.9rem;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.requirement-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .schedule-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .calendar-grid {
+    grid-template-columns: 60px repeat(7, 1fr);
+    font-size: 12px;
+  }
+
+  .course-block {
+    padding: 4px;
+    font-size: 10px;
+  }
+
+  .progress-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .course-header-info {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .requirement-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-grid {
+    display: none; /* Hide calendar on very small screens */
+  }
+
+  .schedule-list {
+    display: block; /* Show list view instead */
+  }
+
+  .progress-overview {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loading and Error States */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.success-message {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #7f8c8d;
+}
+
+.empty-state h3 {
+  margin-bottom: 12px;
+  color: #95a5a6;
+}
+
+.empty-state p {
+  margin-bottom: 20px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: #bdc3c7;
+}

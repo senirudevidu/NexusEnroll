@@ -11,11 +11,21 @@ from backend.dal.degree import Degree
 from backend.service.degreeService import DegreeService
 from backend.presentation.reports import FacultyWorkloadReport, EnrollmentStatisticsReport
 from backend.service.userService import UserService
+from backend.service.enrollmentService import EnrollmentService
+from backend.service.scheduleProgressService import ScheduleProgressService
 bp = Blueprint("routes",__name__)
 
 @bp.route('/test-catalog')
 def test_catalog():
     return render_template('test_course_catalog.html')
+
+@bp.route('/enrollment-demo')
+def enrollment_demo():
+    return render_template('enrollment_demo.html')
+
+@bp.route('/schedule-progress-demo')
+def schedule_progress_demo():
+    return render_template('schedule_progress_demo.html')
 
 @bp.route('/', methods=['GET', 'POST'])
 def index():
@@ -372,4 +382,232 @@ def api_get_user(user_id):
             })
     
     return jsonify({"status": "Error", "message": "User not found"}), 404
+
+# ===============================
+# ENROLLMENT MANAGEMENT ENDPOINTS
+# ===============================
+
+@bp.route('/api/enroll', methods=['POST'])
+def api_enroll_student():
+    """Enroll a student in a course with validation checks"""
+    data = request.get_json()
+    student_id = data.get('student_id')
+    course_id = data.get('course_id')
+    
+    if not student_id or not course_id:
+        return jsonify({"status": "Error", "message": "Both student_id and course_id are required"}), 400
+    
+    service = EnrollmentService(dbconfig())
+    result = service.enroll_student_in_course(student_id, course_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/enrollment/validate', methods=['POST'])
+def api_validate_enrollment():
+    """Validate enrollment requirements without actually enrolling"""
+    data = request.get_json()
+    student_id = data.get('student_id')
+    course_id = data.get('course_id')
+    
+    if not student_id or not course_id:
+        return jsonify({"status": "Error", "message": "Both student_id and course_id are required"}), 400
+    
+    service = EnrollmentService(dbconfig())
+    result = service.validate_enrollment_requirements(student_id, course_id)
+    
+    return jsonify(result), 200
+
+@bp.route('/api/drop/<int:enrollment_id>', methods=['DELETE'])
+def api_drop_enrollment(enrollment_id):
+    """Drop a course enrollment"""
+    service = EnrollmentService(dbconfig())
+    result = service.drop_student_from_course(enrollment_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/enrollments/<int:student_id>')
+def api_get_student_enrollments(student_id):
+    """Get all active enrollments for a student"""
+    service = EnrollmentService(dbconfig())
+    result = service.get_student_enrollments(student_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/student/<int:student_id>/schedule')
+def api_get_student_schedule(student_id):
+    """Get student's current schedule summary"""
+    service = EnrollmentService(dbconfig())
+    result = service.get_student_schedule_summary(student_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/enrollment/statistics')
+def api_enrollment_statistics():
+    """Get enrollment statistics for all courses"""
+    course_id = request.args.get('course_id')
+    
+    service = EnrollmentService(dbconfig())
+    result = service.get_enrollment_statistics(course_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/student/<int:student_id>/available-courses')
+def api_get_available_courses_for_student(student_id):
+    """Get courses available for enrollment for a specific student"""
+    service = EnrollmentService(dbconfig())
+    course_service = CourseService(dbconfig())
+    
+    # Get all courses
+    all_courses = course_service.getAllCourses()
+    
+    # Get student's current enrollments
+    enrollments_result = service.get_student_enrollments(student_id)
+    enrolled_course_ids = []
+    
+    if enrollments_result["status"] == "Success":
+        enrolled_course_ids = [enrollment[2] for enrollment in enrollments_result["data"]]
+    
+    # Filter out courses the student is already enrolled in
+    available_courses = []
+    for course in all_courses:
+        course_id = course[6]  # Assuming course_id is at index 6 in getAllCourses result
+        if course_id not in enrolled_course_ids:
+            # Validate if student can enroll
+            validation = service.validate_enrollment_requirements(student_id, course_id)
+            course_data = {
+                "course_id": course_id,
+                "courseName": course[0],
+                "instructor": f"{course[1]} {course[2]}",
+                "department": course[3],
+                "availableSeats": course[4],
+                "capacity": course[5],
+                "can_enroll": validation["can_enroll"],
+                "issues": validation.get("issues", [])
+            }
+            available_courses.append(course_data)
+    
+    return jsonify({"status": "Success", "courses": available_courses}), 200
+
+
+# ============ SCHEDULE MANAGEMENT API ENDPOINTS ============
+
+@bp.route('/api/personal-schedule/<int:student_id>')
+def api_get_personal_schedule(student_id):
+    """
+    Get student's schedule for a specific semester or current semester
+    Query Parameters:
+    - semester: semester_id (optional, defaults to current semester)
+    """
+    semester_id = request.args.get('semester')
+    
+    service = ScheduleProgressService()
+    
+    # Validate student access
+    if not service.validate_student_access(student_id):
+        return jsonify({
+            "status": "Error",
+            "message": "Student not found or access denied"
+        }), 404
+    
+    # Convert semester_id to int if provided
+    if semester_id:
+        try:
+            semester_id = int(semester_id)
+        except ValueError:
+            return jsonify({
+                "status": "Error",
+                "message": "Invalid semester ID format"
+            }), 400
+    
+    result = service.get_student_schedule(student_id, semester_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/personal-schedule/<int:student_id>/semesters')
+def api_get_personal_schedule_semesters(student_id):
+    """Get all available semesters for a student"""
+    service = ScheduleProgressService()
+    
+    # Validate student access
+    if not service.validate_student_access(student_id):
+        return jsonify({
+            "status": "Error",
+            "message": "Student not found or access denied"
+        }), 404
+    
+    result = service.get_student_semesters(student_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/academic/current-semester')
+def api_get_current_semester():
+    """Get current semester information"""
+    service = ScheduleProgressService()
+    
+    result = service.get_current_semester_info()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+# ============ ACADEMIC PROGRESS TRACKING API ENDPOINTS ============
+
+@bp.route('/api/progress/<int:student_id>')
+def api_get_student_progress(student_id):
+    """
+    Get comprehensive academic progress for a student including:
+    - Completed courses with grades
+    - Pending degree requirements
+    - Academic statistics
+    - Progress percentage
+    """
+    service = ScheduleProgressService()
+    
+    # Validate student access
+    if not service.validate_student_access(student_id):
+        return jsonify({
+            "status": "Error",
+            "message": "Student not found or access denied"
+        }), 404
+    
+    result = service.get_student_academic_progress(student_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/progress/degree-requirements/<int:degree_id>')
+def api_get_degree_requirements(degree_id):
+    """Get all requirements for a specific degree program"""
+    service = ScheduleProgressService()
+    
+    result = service.get_degree_requirements_overview(degree_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
 
