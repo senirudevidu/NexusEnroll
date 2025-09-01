@@ -5,6 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NexusEnroll – University Course Enrolment</title>
     <style>
+      /* Login Modal Styles */
+      #loginModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(30, 60, 114, 0.45);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        animation: fadeInModalBg 0.5s;
+      }
+      @keyframes fadeInModalBg {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .login-modal-content {
+        background: #fff;
+        color: #222;
+        border-radius: 22px;
+        box-shadow: 0 12px 40px rgba(44, 62, 80, 0.22);
+        padding: 48px 36px 36px 36px;
+        width: 370px;
+        text-align: center;
+        position: relative;
+        animation: popUpModal 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      }
+      @keyframes popUpModal {
+        from {
+          transform: scale(0.7) translateY(40px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+      .login-modal-content h2 {
+        margin-bottom: 18px;
+        font-size: 2.1rem;
+        color: #2a5298;
+        letter-spacing: 1px;
+      }
+      .login-modal-content .user-icon {
+        font-size: 2.7rem;
+        margin-bottom: 10px;
+        animation: iconPop 1.5s infinite alternate;
+      }
+      .login-modal-content label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        text-align: left;
+      }
+      .login-modal-content input {
+        width: 100%;
+        padding: 11px;
+        margin-bottom: 18px;
+        border-radius: 9px;
+        border: 1px solid #bfc8e2;
+        font-size: 1.05rem;
+        background: #f4f7fb;
+        transition: border 0.3s;
+      }
+      .login-modal-content input:focus {
+        border: 1.5px solid #2a5298;
+        outline: none;
+      }
+      .login-modal-content button {
+        width: 100%;
+        padding: 13px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(90deg, #2a5298 60%, #1e3c72 100%);
+        color: #fff;
+        font-size: 1.08rem;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(44, 62, 80, 0.1);
+        transition: background 0.3s, transform 0.3s;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .login-modal-content button:hover {
+        background: #222;
+        transform: scale(1.05);
+      }
+      .login-modal-content .error {
+        color: #d32f2f;
+        margin-bottom: 12px;
+        font-size: 0.98rem;
+      }
+      #closeModal {
+        position: absolute;
+        top: 12px;
+        right: 18px;
+        font-size: 1.7rem;
+        cursor: pointer;
+        color: #2a5298;
+        transition: color 0.2s;
+      }
+      #closeModal:hover {
+        color: #d32f2f;
+      }
       /* Module Selection Section */
       .module-section {
         background: linear-gradient(120deg, #f4f7fb 60%, #e3eafc 100%);
@@ -260,47 +370,23 @@
     </style>
   </head>
   <body>
-    <!-- Hero Section -->
-    <header>
-      <div class="circle small"></div>
-      <div class="circle medium"></div>
-      <div class="circle large"></div>
-
-      <h1>Welcome to NexusEnroll</h1>
-      <p>
-        A modern, scalable, and user-friendly University Course Enrolment System
-      </p>
-      <button
-        class="btn"
-        onclick="document.getElementById('modules').scrollIntoView({behavior: 'smooth'})"
-      >
-        Get Started
-      </button>
-    </header>
-
     <!-- Module Selection Section -->
     <section id="modules" class="module-section">
       <h2>Select Your Module</h2>
       <div class="module-cards">
-        <div class="module-card admin" onclick="window.location.href='/admin'">
+        <div class="module-card admin" data-type="admin">
           <div class="icon"><span>🛡️</span></div>
           <h3>Admin</h3>
           <p>Manage courses, users, and analytics.</p>
           <button class="module-btn">Go to Admin</button>
         </div>
-        <div
-          class="module-card faculty"
-          onclick="window.location.href='/faculty'"
-        >
+        <div class="module-card faculty" data-type="faculty">
           <div class="icon"><span>🎓</span></div>
           <h3>Faculty Staff</h3>
           <p>View rosters, submit grades, manage courses.</p>
           <button class="module-btn">Go to Faculty</button>
         </div>
-        <div
-          class="module-card student"
-          onclick="window.location.href='/student'"
-        >
+        <div class="module-card student" data-type="student">
           <div class="icon"><span>👨‍🎓</span></div>
           <h3>Student</h3>
           <p>Browse courses, enroll, track progress.</p>
@@ -308,6 +394,24 @@
         </div>
       </div>
     </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal">
+      <div class="login-modal-content">
+        <span id="closeModal">&times;</span>
+        <div class="user-icon" id="modalUserIcon">🔑</div>
+        <h2 id="modalTitle">Login</h2>
+        <form id="loginForm" method="POST" action="/">
+          <input type="hidden" id="modalUserType" name="userType" />
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required />
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+          <div class="error" id="errorMsg" style="display: none"></div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </div>
 
     <!-- Features Section -->
     <section>
@@ -355,6 +459,57 @@
             card.classList.add("show");
           }, 300 + i * 200);
         });
+
+        // Popup login modal on module click
+        document.querySelectorAll(".module-card").forEach((card) => {
+          card.addEventListener("click", function (e) {
+            var type = card.getAttribute("data-type");
+            document.getElementById("modalUserType").value = type;
+            document.getElementById("loginModal").style.display = "flex";
+            // Set icon and title for user type
+            var icon = "🔑",
+              title = "Login";
+            if (type === "admin") {
+              icon = "🛡️";
+              title = "Admin Login";
+            } else if (type === "faculty") {
+              icon = "🎓";
+              title = "Faculty Login";
+            } else if (type === "student") {
+              icon = "👨‍🎓";
+              title = "Student Login";
+            }
+            document.getElementById("modalUserIcon").textContent = icon;
+            document.getElementById("modalTitle").textContent = title;
+          });
+        });
+
+        // Close modal
+        document.getElementById("closeModal").onclick = function () {
+          document.getElementById("loginModal").style.display = "none";
+        };
+        // Close modal on outside click
+        document.getElementById("loginModal").onclick = function (e) {
+          if (e.target === this) {
+            this.style.display = "none";
+          }
+        };
+
+        // Client-side validation
+        document
+          .getElementById("loginForm")
+          .addEventListener("submit", function (e) {
+            var username = document.getElementById("username").value.trim();
+            var password = document.getElementById("password").value;
+            var errorMsg = document.getElementById("errorMsg");
+            if (!username || !password) {
+              errorMsg.textContent = "Please fill in all fields.";
+              errorMsg.style.display = "block";
+              e.preventDefault();
+            } else {
+              errorMsg.style.display = "none";
+            }
+          });
       });
     </script>
   </body>

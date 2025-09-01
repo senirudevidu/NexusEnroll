@@ -1,6 +1,7 @@
 # User registration
 from abc import ABC, abstractmethod
 from flask import request
+from backend.dal.dbconfig import dbconfig
 
 
 class User(ABC):
@@ -47,8 +48,8 @@ class Student(User):
         cursor = conn.cursor()
         try:
             # Insert into Users table
-            query = "INSERT INTO Users (firstName, lastName, mobileNo, email) VALUES (%s, %s, %s, %s)"
-            cursor.execute(query, (self.firstName, self.lastName, self.mobileNo, self.email))
+            query = "INSERT INTO Users (firstName, lastName, mobileNo, email,module) VALUES (%s, %s, %s, %s,%s)"
+            cursor.execute(query, (self.firstName, self.lastName, self.mobileNo, self.email,"student"))
             user_id = cursor.lastrowid  # Get the last inserted user ID
             conn.commit()
 
@@ -190,8 +191,8 @@ class FacultyMember(User):
         cursor = conn.cursor()
         
         # Insert into Users table
-        query = "INSERT INTO Users (firstName, lastName, mobileNo, email) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (self.firstName, self.lastName, self.mobileNo, self.email))
+        query = "INSERT INTO Users (firstName, lastName, mobileNo, email,module) VALUES (%s, %s, %s, %s,%s)"
+        cursor.execute(query, (self.firstName, self.lastName, self.mobileNo, self.email,"faculty"))
         user_id = cursor.lastrowid  # Get the last inserted user ID
         conn.commit()
 
@@ -308,8 +309,8 @@ class Admin(User):
         cursor = conn.cursor()
 
     # Insert into Users table
-        query = "INSERT INTO Users (firstName, lastName, mobileNo, email) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (self.firstName, self.lastName, self.mobileNo, self.email))
+        query = "INSERT INTO Users (firstName, lastName, mobileNo, email,module) VALUES (%s, %s, %s, %s,%s)"
+        cursor.execute(query, (self.firstName, self.lastName, self.mobileNo, self.email,"admin"))
         user_id = cursor.lastrowid  # Get the last inserted user ID
         conn.commit()
 
@@ -414,3 +415,19 @@ class FacultyMemberFactory(UserFactory):
 class AdminFactory(UserFactory):
     def create_user(self,db,firstName,lastName,email,mobileNo):
         return Admin(db,firstName,lastName,email,mobileNo)
+
+class UserDAL:
+    def __init__(self, db=None):
+        self.database = dbconfig()
+        self.db = self.database.get_db_connection()
+
+    def authenticate(self, username, password,module):
+        cursor = self.db.cursor()
+        query = """
+            SELECT user_id, firstName,lastName,module FROM Users
+            WHERE email = %s AND mobileNo = %s AND accountStatus = 'active' AND module = %s
+        """
+        cursor.execute(query, (username, password,module))
+        result = cursor.fetchone()
+        cursor.close()
+        return result

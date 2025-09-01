@@ -1,5 +1,5 @@
 from turtle import st
-from flask import request,Blueprint,jsonify,render_template,session
+from flask import request,Blueprint,jsonify,render_template,session,redirect,url_for
 from backend.service.adminService import AdminService
 from backend.dal.course import Course
 from backend.service.courseService import CourseService
@@ -10,24 +10,53 @@ from backend.service.studentService import StudentService
 from backend.dal.degree import Degree
 from backend.service.degreeService import DegreeService
 from backend.presentation.reports import FacultyWorkloadReport, EnrollmentStatisticsReport
-
+from backend.service.userService import UserService
 bp = Blueprint("routes",__name__)
 
-@bp.route('/')
+@bp.route('/', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        userType = request.form.get('userType')
+        userService = UserService()
+        login_result = userService.login(username, password, userType)
+        if login_result['status'] == 'success':
+            session['user_id'] = login_result['user_id']
+            session['firstName'] = login_result['firstName']
+            session['lastName'] = login_result['lastName']
+            session['module'] = login_result['module']
+            # Redirect to dashboard based on userType
+            if userType == 'admin':
+                return redirect('/admin')
+            elif userType == 'faculty':
+                return redirect('/faculty')
+            elif userType == 'student':
+                return redirect('/student')
+            else:
+                return render_template('index.html', error='Invalid user type')
+        else:
+            return render_template('index.html', error='Please fill in all fields.')
     return render_template('index.html')
 
 @bp.route('/admin')
 def admin_dashboard():
-    return render_template('admin_dashboard.html')
+    if session.get('username'):
+        return render_template('admin_dashboard.html', username=session['username'])
+    return redirect(url_for('index'))
 
 @bp.route('/faculty')
 def faculty_dashboard():
-    return render_template('faculty_dashboard.html')
+    if session.get('username'):
+        return render_template('faculty_dashboard.html', username=session['username'])
+    return redirect(url_for('index'))
+
 
 @bp.route('/student')
 def student_dashboard():
-    return render_template('student_dashboard.html')
+    if session.get('username'):
+        return render_template('student_dashboard.html', username=session['username'])
+    return redirect(url_for('index'))
 
 @bp.route('/addUserForm')
 def add_user_form():
