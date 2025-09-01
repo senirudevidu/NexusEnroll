@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule & Progress Demo - NexusEnroll</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/scheduleProgress.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .demo-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .demo-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f3f4;
+      }
+
+      .demo-title {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .demo-subtitle {
+        color: #7f8c8d;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+      }
+
+      .feature-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0 5px;
+      }
+
+      .demo-tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 8px;
+      }
+
+      .demo-tab {
+        background: none;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #6c757d;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .demo-tab.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+      }
+
+      .demo-section {
+        display: none;
+      }
+
+      .demo-section.active {
+        display: block;
+      }
+
+      .api-demo {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        border-left: 4px solid #667eea;
+      }
+
+      .api-title {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .api-url {
+        background: #2c3e50;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        margin: 10px 0;
+      }
+
+      .test-button {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: transform 0.2s ease;
+      }
+
+      .test-button:hover {
+        transform: translateY(-2px);
+      }
+
+      .test-result {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 10px;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .student-selector {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .student-selector select {
+        padding: 10px 15px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin: 0 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-container">
+      <div class="demo-header">
+        <h1 class="demo-title">📅 Schedule & Progress Management</h1>
+        <p class="demo-subtitle">
+          Personal Schedule Management and Academic Progress Tracking System
+        </p>
+        <div class="feature-badges">
+          <span class="feature-badge">📅 Weekly Calendar</span>
+          <span class="feature-badge">📊 Progress Tracking</span>
+          <span class="feature-badge">🎓 Degree Requirements</span>
+          <span class="feature-badge">📈 Academic Analytics</span>
+        </div>
+      </div>
+
+      <div class="student-selector">
+        <label for="demoStudentId"><strong>Select Demo Student:</strong></label>
+        <select id="demoStudentId" onchange="updateDemoStudent()">
+          <option value="1">Student 1 (Computer Science)</option>
+          <option value="2">Student 2 (Engineering)</option>
+          <option value="3">Student 3 (Mathematics)</option>
+        </select>
+      </div>
+
+      <div class="demo-tabs">
+        <button class="demo-tab active" onclick="showDemoSection('schedule')">
+          <i class="fas fa-calendar"></i> Schedule Management
+        </button>
+        <button class="demo-tab" onclick="showDemoSection('progress')">
+          <i class="fas fa-chart-line"></i> Academic Progress
+        </button>
+        <button class="demo-tab" onclick="showDemoSection('api')">
+          <i class="fas fa-code"></i> API Testing
+        </button>
+      </div>
+
+      <!-- Schedule Management Demo -->
+      <div id="schedule" class="demo-section active">
+        <div class="schedule-container">
+          <div class="schedule-header">
+            <h2 class="schedule-title">Personal Schedule Management</h2>
+            <div class="schedule-controls">
+              <div class="semester-selector">
+                <label for="demoSemesterSelect">Semester:</label>
+                <select id="demoSemesterSelect">
+                  <option value="">Current Semester</option>
+                </select>
+              </div>
+              <div class="view-toggle">
+                <button
+                  id="demoCalendarViewBtn"
+                  class="view-btn active"
+                  onclick="showCalendarView()"
+                >
+                  <i class="fas fa-calendar"></i> Calendar
+                </button>
+                <button
+                  id="demoListViewBtn"
+                  class="view-btn"
+                  onclick="showListView()"
+                >
+                  <i class="fas fa-list"></i> List
+                </button>
+              </div>
+              <button onclick="loadDemoSchedule()" class="refresh-btn">
+                <i class="fas fa-sync-alt"></i> Load Demo
+              </button>
+            </div>
+          </div>
+
+          <div id="demoScheduleSummary"></div>
+          <div id="demoScheduleCalendar"></div>
+          <div id="demoScheduleList" style="display: none"></div>
+        </div>
+      </div>
+
+      <!-- Academic Progress Demo -->
+      <div id="progress" class="demo-section">
+        <div class="progress-container">
+          <div class="progress-header">
+            <h2 class="progress-title">Academic Progress Tracking</h2>
+            <div class="student-info">
+              Comprehensive degree progress and requirements tracking
+            </div>
+            <button onclick="loadDemoProgress()" class="refresh-btn">
+              <i class="fas fa-sync-alt"></i> Load Demo
+            </button>
+          </div>
+
+          <div id="demoProgressOverview"></div>
+          <div id="demoCompletedCourses"></div>
+          <div id="demoPendingRequirements"></div>
+          <div id="demoGradeDistribution"></div>
+        </div>
+      </div>
+
+      <!-- API Testing Demo -->
+      <div id="api" class="demo-section">
+        <h2>API Endpoints Testing</h2>
+
+        <div class="api-demo">
+          <div class="api-title">📅 Get Student Schedule</div>
+          <div class="api-url">
+            GET
+            /api/personal-schedule/&lt;student_id&gt;?semester=&lt;semester_id&gt;
+          </div>
+          <button class="test-button" onclick="testScheduleAPI()">
+            Test Schedule API
+          </button>
+          <div
+            id="scheduleApiResult"
+            class="test-result"
+            style="display: none"
+          ></div>
+        </div>
+
+        <div class="api-demo">
+          <div class="api-title">📊 Get Academic Progress</div>
+          <div class="api-url">GET /api/progress/&lt;student_id&gt;</div>
+          <button class="test-button" onclick="testProgressAPI()">
+            Test Progress API
+          </button>
+          <div
+            id="progressApiResult"
+            class="test-result"
+            style="display: none"
+          ></div>
+        </div>
+
+        <div class="api-demo">
+          <div class="api-title">📚 Get Available Semesters</div>
+          <div class="api-url">
+            GET /api/personal-schedule/&lt;student_id&gt;/semesters
+          </div>
+          <button class="test-button" onclick="testSemestersAPI()">
+            Test Semesters API
+          </button>
+          <div
+            id="semestersApiResult"
+            class="test-result"
+            style="display: none"
+          ></div>
+        </div>
+
+        <div class="api-demo">
+          <div class="api-title">🎓 Get Current Semester</div>
+          <div class="api-url">GET /api/academic/current-semester</div>
+          <button class="test-button" onclick="testCurrentSemesterAPI()">
+            Test Current Semester API
+          </button>
+          <div
+            id="currentSemesterApiResult"
+            class="test-result"
+            style="display: none"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scheduleProgress.js') }}"></script>
+    <script>
+      let demoManager = null;
+      let currentStudentId = 1;
+
+      // Initialize demo
+      document.addEventListener("DOMContentLoaded", function () {
+        demoManager = new ScheduleProgressManager();
+        loadDemoData();
+      });
+
+      function showDemoSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll(".demo-section").forEach((section) => {
+          section.classList.remove("active");
+        });
+
+        // Show selected section
+        document.getElementById(sectionId).classList.add("active");
+
+        // Update tab buttons
+        document.querySelectorAll(".demo-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        event.target.classList.add("active");
+      }
+
+      function updateDemoStudent() {
+        currentStudentId = document.getElementById("demoStudentId").value;
+        loadDemoData();
+      }
+
+      function loadDemoData() {
+        loadDemoSchedule();
+        loadDemoProgress();
+      }
+
+      // Demo schedule data
+      function loadDemoSchedule() {
+        const demoScheduleData = [
+          {
+            course_id: 1,
+            courseName: "CS 101: Introduction to Programming",
+            instructor: "Dr. John Smith",
+            day: "Monday",
+            startTime: "09:00:00",
+            endTime: "10:30:00",
+            location: "Computer Lab 101",
+            semester: "Fall 2024",
+            academic_year: "2024-25",
+            credits: 3,
+            marks: null,
+            markStatus: "In Progress",
+          },
+          {
+            course_id: 2,
+            courseName: "MATH 201: Calculus II",
+            instructor: "Prof. Sarah Johnson",
+            day: "Tuesday",
+            startTime: "11:00:00",
+            endTime: "12:30:00",
+            location: "Math Building 205",
+            semester: "Fall 2024",
+            academic_year: "2024-25",
+            credits: 4,
+            marks: null,
+            markStatus: "In Progress",
+          },
+          {
+            course_id: 3,
+            courseName: "ENG 102: Technical Writing",
+            instructor: "Dr. Emily Davis",
+            day: "Wednesday",
+            startTime: "14:00:00",
+            endTime: "15:30:00",
+            location: "Liberal Arts 150",
+            semester: "Fall 2024",
+            academic_year: "2024-25",
+            credits: 3,
+            marks: null,
+            markStatus: "In Progress",
+          },
+        ];
+
+        const weeklyGrid = {
+          Monday: [demoScheduleData[0]],
+          Tuesday: [demoScheduleData[1]],
+          Wednesday: [demoScheduleData[2]],
+          Thursday: [],
+          Friday: [],
+          Saturday: [],
+          Sunday: [],
+        };
+
+        if (demoManager) {
+          demoManager.displaySchedule = function (scheduleData, weeklyGrid) {
+            this.displayCalendarView(weeklyGrid);
+            this.displayListView(scheduleData);
+            this.updateScheduleSummary(scheduleData);
+          };
+
+          // Override container IDs for demo
+          const originalIds = {
+            calendarContainer: "scheduleCalendar",
+            listContainer: "scheduleList",
+            summaryContainer: "scheduleSummary",
+          };
+
+          // Temporarily update IDs for demo
+          document.getElementById("demoScheduleCalendar").id =
+            "scheduleCalendar";
+          document.getElementById("demoScheduleList").id = "scheduleList";
+          document.getElementById("demoScheduleSummary").id = "scheduleSummary";
+
+          demoManager.displaySchedule(demoScheduleData, weeklyGrid);
+
+          // Restore original IDs
+          document.getElementById("scheduleCalendar").id =
+            "demoScheduleCalendar";
+          document.getElementById("scheduleList").id = "demoScheduleList";
+          document.getElementById("scheduleSummary").id = "demoScheduleSummary";
+        }
+      }
+
+      // Demo progress data
+      function loadDemoProgress() {
+        const demoProgressData = {
+          student_info: {
+            student_id: currentStudentId,
+            student_name: "John Doe",
+            degree_name: "Computer Science",
+            degree_id: 1,
+            year_of_study: 2,
+          },
+          academic_summary: {
+            completed_courses: 8,
+            completed_credits: 24,
+            gpa: 3.75,
+            current_courses: 4,
+            current_credits: 13,
+            total_degree_credits: 120,
+            progress_percentage: 30.8,
+          },
+          completed_courses: [
+            {
+              course_id: 101,
+              courseName: "CS 100: Programming Fundamentals",
+              description: "Introduction to programming concepts",
+              credits: 3,
+              marks: 92,
+              grade: "A",
+              markStatus: "Completed",
+              semester: "Fall 2023",
+              academic_year: "2023-24",
+              instructor: "Dr. Alice Brown",
+              department: "Computer Science",
+            },
+            {
+              course_id: 102,
+              courseName: "MATH 101: Calculus I",
+              description: "Differential and integral calculus",
+              credits: 4,
+              marks: 88,
+              grade: "B",
+              markStatus: "Completed",
+              semester: "Fall 2023",
+              academic_year: "2023-24",
+              instructor: "Prof. Robert Wilson",
+              department: "Mathematics",
+            },
+          ],
+          pending_requirements: [
+            {
+              course_id: 201,
+              courseName: "CS 201: Data Structures",
+              description: "Advanced data structures and algorithms",
+              credits: 3,
+              requirement_type: "Core Requirement",
+              year_requirement: 2,
+              is_core_requirement: true,
+            },
+            {
+              course_id: 202,
+              courseName: "CS 301: Database Systems",
+              description: "Database design and management",
+              credits: 3,
+              requirement_type: "Core Requirement",
+              year_requirement: 3,
+              is_core_requirement: true,
+            },
+          ],
+          grade_distribution: {
+            A: 3,
+            B: 4,
+            C: 1,
+            D: 0,
+            F: 0,
+            "Not Graded": 0,
+          },
+        };
+
+        if (demoManager) {
+          // Override container IDs for demo
+          document.getElementById("demoProgressOverview").id =
+            "progressOverview";
+          document.getElementById("demoCompletedCourses").id =
+            "completedCourses";
+          document.getElementById("demoPendingRequirements").id =
+            "pendingRequirements";
+          document.getElementById("demoGradeDistribution").id =
+            "gradeDistribution";
+
+          demoManager.displayAcademicProgress(demoProgressData);
+
+          // Restore original IDs
+          document.getElementById("progressOverview").id =
+            "demoProgressOverview";
+          document.getElementById("completedCourses").id =
+            "demoCompletedCourses";
+          document.getElementById("pendingRequirements").id =
+            "demoPendingRequirements";
+          document.getElementById("gradeDistribution").id =
+            "demoGradeDistribution";
+        }
+      }
+
+      function showCalendarView() {
+        document.getElementById("demoScheduleCalendar").style.display = "block";
+        document.getElementById("demoScheduleList").style.display = "none";
+        document.getElementById("demoCalendarViewBtn").classList.add("active");
+        document.getElementById("demoListViewBtn").classList.remove("active");
+      }
+
+      function showListView() {
+        document.getElementById("demoScheduleCalendar").style.display = "none";
+        document.getElementById("demoScheduleList").style.display = "block";
+        document
+          .getElementById("demoCalendarViewBtn")
+          .classList.remove("active");
+        document.getElementById("demoListViewBtn").classList.add("active");
+      }
+
+      // API Testing Functions
+      async function testScheduleAPI() {
+        const resultDiv = document.getElementById("scheduleApiResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Loading...";
+
+        try {
+          const response = await fetch(
+            `/api/personal-schedule/${currentStudentId}`
+          );
+          const data = await response.json();
+          resultDiv.innerHTML = JSON.stringify(data, null, 2);
+        } catch (error) {
+          resultDiv.innerHTML = `Error: ${error.message}`;
+        }
+      }
+
+      async function testProgressAPI() {
+        const resultDiv = document.getElementById("progressApiResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Loading...";
+
+        try {
+          const response = await fetch(`/api/progress/${currentStudentId}`);
+          const data = await response.json();
+          resultDiv.innerHTML = JSON.stringify(data, null, 2);
+        } catch (error) {
+          resultDiv.innerHTML = `Error: ${error.message}`;
+        }
+      }
+
+      async function testSemestersAPI() {
+        const resultDiv = document.getElementById("semestersApiResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Loading...";
+
+        try {
+          const response = await fetch(
+            `/api/personal-schedule/${currentStudentId}/semesters`
+          );
+          const data = await response.json();
+          resultDiv.innerHTML = JSON.stringify(data, null, 2);
+        } catch (error) {
+          resultDiv.innerHTML = `Error: ${error.message}`;
+        }
+      }
+
+      async function testCurrentSemesterAPI() {
+        const resultDiv = document.getElementById("currentSemesterApiResult");
+        resultDiv.style.display = "block";
+        resultDiv.innerHTML = "Loading...";
+
+        try {
+          const response = await fetch("/api/academic/current-semester");
+          const data = await response.json();
+          resultDiv.innerHTML = JSON.stringify(data, null, 2);
+        } catch (error) {
+          resultDiv.innerHTML = `Error: ${error.message}`;
+        }
+      }
+    </script>
+  </body>
+</html>
