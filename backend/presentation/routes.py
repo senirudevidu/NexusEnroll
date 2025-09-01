@@ -1,5 +1,5 @@
 from turtle import st
-from flask import request,Blueprint,jsonify,render_template,session,redirect,url_for
+from flask import request,Blueprint,jsonify,render_template,session,redirect,url_for,make_response
 from backend.service.adminService import AdminService
 from backend.dal.course import Course
 from backend.service.courseService import CourseService
@@ -13,19 +13,8 @@ from backend.presentation.reports import FacultyWorkloadReport, EnrollmentStatis
 from backend.service.userService import UserService
 from backend.service.enrollmentService import EnrollmentService
 from backend.service.scheduleProgressService import ScheduleProgressService
+from backend.service.reportingService import ReportingService
 bp = Blueprint("routes",__name__)
-
-@bp.route('/test-catalog')
-def test_catalog():
-    return render_template('test_course_catalog.html')
-
-@bp.route('/enrollment-demo')
-def enrollment_demo():
-    return render_template('enrollment_demo.html')
-
-@bp.route('/schedule-progress-demo')
-def schedule_progress_demo():
-    return render_template('schedule_progress_demo.html')
 
 @bp.route('/', methods=['GET', 'POST'])
 def index():
@@ -38,6 +27,7 @@ def index():
         if login_result['status'] == 'success':
             session['username'] = username
             session['user_id'] = login_result['user_id']
+            session['username'] = login_result['username']
             session['firstName'] = login_result['firstName']
             session['lastName'] = login_result['lastName']
             session['module'] = login_result['module']
@@ -56,22 +46,16 @@ def index():
 
 @bp.route('/admin')
 def admin_dashboard():
-    if session.get('firstName'):
-        return render_template('admin_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
-    return redirect(url_for('index'))
+    return render_template('admin_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
 
 @bp.route('/faculty')
 def faculty_dashboard():
-    if session.get('firstName'):
-        return render_template('faculty_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
-    return redirect(url_for('index'))
+    return render_template('faculty_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
 
 
 @bp.route('/student')
 def student_dashboard():
-    if session.get('firstName'):
-        return render_template('student_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
-    return redirect(url_for('index'))
+    return render_template('student_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
 
 @bp.route('/addUserForm')
 def add_user_form():
@@ -611,4 +595,192 @@ def api_get_degree_requirements(degree_id):
         return jsonify(result), 200
     else:
         return jsonify(result), 400
+
+
+# ============= REPORTING & ANALYTICS ENDPOINTS =============
+
+@bp.route('/reports')
+def reports_dashboard():
+    """Render the reports dashboard page"""
+    return render_template('reports_dashboard.html', 
+                         firstName=session.get('firstName', ''), 
+                         lastName=session.get('lastName', ''))
+
+@bp.route('/api/reports/enrollment-statistics')
+def api_enrollment_statistics_detailed():
+    """Get detailed enrollment statistics by department and semester"""
+    department_id = request.args.get('department_id', type=int)
+    semester = request.args.get('semester')
+    
+    service = ReportingService()
+    result = service.get_enrollment_statistics_by_department(department_id, semester)
+    service.close_connection()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/reports/faculty-workload')
+def api_faculty_workload_detailed():
+    """Get detailed faculty workload reports"""
+    faculty_id = request.args.get('faculty_id', type=int)
+    
+    service = ReportingService()
+    result = service.get_faculty_workload_report(faculty_id)
+    service.close_connection()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/reports/course-popularity')
+def api_course_popularity_trends():
+    """Get course popularity trends"""
+    semester = request.args.get('semester')
+    limit = request.args.get('limit', default=10, type=int)
+    
+    service = ReportingService()
+    result = service.get_course_popularity_trends(semester, limit)
+    service.close_connection()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/reports/high-capacity-courses')
+def api_high_capacity_courses():
+    """Get courses with high capacity utilization"""
+    department_name = request.args.get('department')
+    threshold = request.args.get('threshold', default=90, type=float)
+    
+    service = ReportingService()
+    result = service.get_high_capacity_courses(department_name, threshold)
+    service.close_connection()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/reports/business-school-capacity')
+def api_business_school_high_capacity():
+    """
+    Specific use case: Get Business school courses over 90% capacity
+    with course details including instructor, capacity, and utilization
+    """
+    threshold = request.args.get('threshold', default=90, type=float)
+    
+    service = ReportingService()
+    result = service.get_business_school_high_capacity_report(threshold)
+    service.close_connection()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/reports/department-analytics')
+def api_department_analytics():
+    """Get comprehensive department analytics"""
+    semester = request.args.get('semester')
+    
+    service = ReportingService()
+    result = service.get_department_analytics(semester)
+    service.close_connection()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/reports/dashboard')
+def api_comprehensive_dashboard():
+    """Get all analytics data for comprehensive dashboard"""
+    service = ReportingService()
+    result = service.get_comprehensive_analytics_dashboard()
+    service.close_connection()
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/reports/export/json')
+def api_export_report_json():
+    """Export report data as JSON"""
+    report_type = request.args.get('type', 'enrollment')
+    department_id = request.args.get('department_id', type=int)
+    
+    service = ReportingService()
+    
+    # Get the appropriate report data
+    if report_type == 'enrollment':
+        report_result = service.get_enrollment_statistics_by_department(department_id)
+    elif report_type == 'faculty':
+        report_result = service.get_faculty_workload_report()
+    elif report_type == 'popularity':
+        report_result = service.get_course_popularity_trends()
+    elif report_type == 'business-capacity':
+        report_result = service.get_business_school_high_capacity_report()
+    else:
+        service.close_connection()
+        return jsonify({"status": "Error", "message": "Invalid report type"}), 400
+    
+    if report_result["status"] == "Success":
+        export_result = service.export_report_as_json(report_result["data"])
+        service.close_connection()
+        
+        if export_result["status"] == "Success":
+            response = make_response(export_result["data"])
+            response.headers['Content-Type'] = 'application/json'
+            response.headers['Content-Disposition'] = f'attachment; filename="{report_type}_report.json"'
+            return response
+        else:
+            return jsonify(export_result), 400
+    else:
+        service.close_connection()
+        return jsonify(report_result), 400
+
+@bp.route('/api/reports/export/html')
+def api_export_report_html():
+    """Export report data as HTML table"""
+    report_type = request.args.get('type', 'enrollment')
+    department_id = request.args.get('department_id', type=int)
+    
+    service = ReportingService()
+    
+    # Get the appropriate report data
+    if report_type == 'enrollment':
+        report_result = service.get_enrollment_statistics_by_department(department_id)
+        title = "Enrollment Statistics Report"
+    elif report_type == 'faculty':
+        report_result = service.get_faculty_workload_report()
+        title = "Faculty Workload Report"
+    elif report_type == 'popularity':
+        report_result = service.get_course_popularity_trends()
+        title = "Course Popularity Report"
+    elif report_type == 'business-capacity':
+        report_result = service.get_business_school_high_capacity_report()
+        title = "Business School High Capacity Report"
+    else:
+        service.close_connection()
+        return jsonify({"status": "Error", "message": "Invalid report type"}), 400
+    
+    if report_result["status"] == "Success":
+        export_result = service.export_report_as_html(report_result["data"], title)
+        service.close_connection()
+        
+        if export_result["status"] == "Success":
+            response = make_response(export_result["data"])
+            response.headers['Content-Type'] = 'text/html'
+            response.headers['Content-Disposition'] = f'attachment; filename="{report_type}_report.html"'
+            return response
+        else:
+            return jsonify(export_result), 400
+    else:
+        service.close_connection()
+        return jsonify(report_result), 400
 

@@ -100,86 +100,100 @@ function loadUsers() {
 }
 
 function loadReports() {
+  // Load quick metrics and alerts first
+  loadQuickMetrics();
+  loadRecentAlerts();
+
+  // Then load legacy reports if containers exist
   AjaxHelper.get(
     "/api/reports",
     function (data) {
-      // Enrollment Statistics
+      // Enrollment Statistics (Legacy)
       const enrollmentContainer = document.getElementById(
         "enrollment-report-container"
       );
       const enrollmentError = document.getElementById("enrollment-error");
-      enrollmentContainer.innerHTML = "";
-      if (
-        Array.isArray(data.enrollment_data) &&
-        data.enrollment_data.length > 0
-      ) {
-        enrollmentError.style.display = "none";
-        data.enrollment_data.forEach((course) => {
-          const card = document.createElement("div");
-          card.className = "report-card";
-          card.innerHTML = `
-            <div class="card-header">
-              <span class="course-name">${course.courseName || "-"}</span>
-              <span class="status ${
-                course.status ? course.status.toLowerCase() : ""
-              }">${course.status || "-"}</span>
-            </div>
-            <div class="card-body">
-              <div class="card-row"><span class="label">Department:</span> <span>${
-                course.department || "-"
-              }</span></div>
-              <div class="card-row"><span class="label">Available Seats:</span> <span>${
-                course.availableSeats || "-"
-              }</span></div>
-              <div class="card-row"><span class="label">Capacity:</span> <span>${
-                course.capacity || "-"
-              }</span></div>
-              <div class="card-row"><span class="label">Enrolled %:</span> <span>${
-                course.enrolledPercentage
-                  ? course.enrolledPercentage.toFixed(2) + "%"
-                  : "-"
-              }</span></div>
-            </div>
-          `;
-          enrollmentContainer.appendChild(card);
-        });
-      } else {
-        enrollmentError.style.display = "block";
+
+      if (enrollmentContainer) {
+        enrollmentContainer.innerHTML = "";
+        if (
+          Array.isArray(data.enrollment_data) &&
+          data.enrollment_data.length > 0
+        ) {
+          if (enrollmentError) enrollmentError.style.display = "none";
+          data.enrollment_data.forEach((course) => {
+            const card = document.createElement("div");
+            card.className = "report-card";
+            card.innerHTML = `
+              <div class="card-header">
+                <span class="course-name">${course.courseName || "-"}</span>
+                <span class="status ${
+                  course.status ? course.status.toLowerCase() : ""
+                }">${course.status || "-"}</span>
+              </div>
+              <div class="card-body">
+                <div class="card-row"><span class="label">Department:</span> <span>${
+                  course.department || "-"
+                }</span></div>
+                <div class="card-row"><span class="label">Available Seats:</span> <span>${
+                  course.availableSeats || "-"
+                }</span></div>
+                <div class="card-row"><span class="label">Capacity:</span> <span>${
+                  course.capacity || "-"
+                }</span></div>
+                <div class="card-row"><span class="label">Enrolled %:</span> <span>${
+                  course.enrolledPercentage
+                    ? course.enrolledPercentage.toFixed(2) + "%"
+                    : "-"
+                }</span></div>
+              </div>
+            `;
+            enrollmentContainer.appendChild(card);
+          });
+        } else {
+          if (enrollmentError) enrollmentError.style.display = "block";
+        }
       }
 
-      // Faculty Workload
+      // Faculty Workload (Legacy)
       const facultyContainer = document.getElementById(
         "faculty-workload-container"
       );
       const facultyError = document.getElementById("faculty-error");
-      facultyContainer.innerHTML = "";
-      if (
-        Array.isArray(data.faculty_workload) &&
-        data.faculty_workload.length > 0
-      ) {
-        facultyError.style.display = "none";
-        data.faculty_workload.forEach((fac) => {
-          const card = document.createElement("div");
-          card.className = "report-card";
-          card.innerHTML = `
-            <div class="card-header">
-              <span>Faculty: ${fac.facultyName}</span>
-              <span>ID: ${fac.facultyId}</span>
-            </div>
-            <div class="card-body">
-              <div class="card-row"><span class="label">Number of Courses:</span> <span>${fac.numberOfCourses}</span></div>
-              <div class="card-row"><span class="label">Number of Students:</span> <span>${fac.numberOfStudents}</span></div>
-            </div>
-          `;
-          facultyContainer.appendChild(card);
-        });
-      } else {
-        facultyError.style.display = "block";
+
+      if (facultyContainer) {
+        facultyContainer.innerHTML = "";
+        if (
+          Array.isArray(data.faculty_workload) &&
+          data.faculty_workload.length > 0
+        ) {
+          if (facultyError) facultyError.style.display = "none";
+          data.faculty_workload.forEach((fac) => {
+            const card = document.createElement("div");
+            card.className = "report-card";
+            card.innerHTML = `
+              <div class="card-header">
+                <span>Faculty: ${fac.facultyName}</span>
+                <span>ID: ${fac.facultyId}</span>
+              </div>
+              <div class="card-body">
+                <div class="card-row"><span class="label">Number of Courses:</span> <span>${fac.numberOfCourses}</span></div>
+                <div class="card-row"><span class="label">Number of Students:</span> <span>${fac.numberOfStudents}</span></div>
+              </div>
+            `;
+            facultyContainer.appendChild(card);
+          });
+        } else {
+          if (facultyError) facultyError.style.display = "block";
+        }
       }
     },
     function (error) {
-      document.getElementById("enrollment-error").style.display = "block";
-      document.getElementById("faculty-error").style.display = "block";
+      console.error("Failed to load legacy reports:", error);
+      const enrollmentError = document.getElementById("enrollment-error");
+      const facultyError = document.getElementById("faculty-error");
+      if (enrollmentError) enrollmentError.style.display = "block";
+      if (facultyError) facultyError.style.display = "block";
     }
   );
 }
@@ -576,4 +590,395 @@ function deactivateUser(userId, userType) {
       }
     );
   }
+}
+
+// ============= REPORTING & ANALYTICS QUICK ACTIONS =============
+
+function loadReports() {
+  // Load legacy reports
+  AjaxHelper.get(
+    "/api/reports",
+    function (data) {
+      // Enrollment Statistics
+      const enrollmentContainer = document.getElementById(
+        "enrollment-report-container"
+      );
+      const enrollmentError = document.getElementById("enrollment-error");
+      if (enrollmentContainer) {
+        enrollmentContainer.innerHTML = "";
+        if (
+          Array.isArray(data.enrollment_data) &&
+          data.enrollment_data.length > 0
+        ) {
+          enrollmentError.style.display = "none";
+          data.enrollment_data.forEach((course) => {
+            const card = document.createElement("div");
+            card.className = "report-card";
+            card.innerHTML = `
+              <div class="card-header">
+                <span class="course-name">${course.courseName || "-"}</span>
+                <span class="status ${
+                  course.status ? course.status.toLowerCase() : ""
+                }">${course.status || "-"}</span>
+              </div>
+              <div class="card-body">
+                <div class="card-row"><span class="label">Department:</span> <span>${
+                  course.department || "-"
+                }</span></div>
+                <div class="card-row"><span class="label">Available Seats:</span> <span>${
+                  course.availableSeats || "-"
+                }</span></div>
+                <div class="card-row"><span class="label">Capacity:</span> <span>${
+                  course.capacity || "-"
+                }</span></div>
+                <div class="card-row"><span class="label">Enrolled %:</span> <span>${
+                  course.enrolledPercentage
+                    ? course.enrolledPercentage.toFixed(2) + "%"
+                    : "-"
+                }</span></div>
+              </div>
+            `;
+            enrollmentContainer.appendChild(card);
+          });
+        } else {
+          enrollmentError.style.display = "block";
+        }
+      }
+    },
+    function (error) {
+      console.error("Failed to load legacy reports:", error);
+    }
+  );
+
+  // Load quick metrics
+  loadQuickMetrics();
+  loadRecentAlerts();
+}
+
+function loadQuickMetrics() {
+  // Load dashboard data for quick metrics
+  AjaxHelper.get(
+    "/api/reports/dashboard",
+    function (result) {
+      if (result.status === "Success") {
+        const data = result.data;
+
+        // Update metrics
+        const totalEnrollments =
+          data.enrollmentStatistics?.reduce(
+            (sum, course) => sum + course.filledSeats,
+            0
+          ) || 0;
+        const activeFaculty = data.facultyWorkload?.length || 0;
+        const highCapacityCount = data.highCapacityCourses?.length || 0;
+        const avgUtilization =
+          data.departmentAnalytics?.reduce(
+            (sum, dept) => sum + dept.avgUtilization,
+            0
+          ) / (data.departmentAnalytics?.length || 1) || 0;
+
+        // Update DOM elements
+        updateMetric(
+          "totalEnrollmentsMetric",
+          totalEnrollments,
+          "enrollmentTrend",
+          "students enrolled"
+        );
+        updateMetric(
+          "activeFacultyMetric",
+          activeFaculty,
+          "facultyWorkloadTrend",
+          "faculty members"
+        );
+        updateMetric(
+          "highCapacityMetric",
+          highCapacityCount,
+          "capacityTrend",
+          "courses need attention"
+        );
+        updateMetric(
+          "avgUtilizationMetric",
+          `${avgUtilization.toFixed(1)}%`,
+          "utilizationTrend",
+          "average utilization"
+        );
+      }
+    },
+    function (error) {
+      console.error("Failed to load quick metrics:", error);
+    }
+  );
+}
+
+function updateMetric(metricId, value, trendId, description) {
+  const metricElement = document.getElementById(metricId);
+  const trendElement = document.getElementById(trendId);
+
+  if (metricElement) {
+    metricElement.textContent = value;
+  }
+
+  if (trendElement) {
+    trendElement.textContent = description;
+  }
+}
+
+function loadRecentAlerts() {
+  // Load recent high capacity alerts
+  AjaxHelper.get(
+    "/api/reports/high-capacity-courses?threshold=90",
+    function (result) {
+      if (result.status === "Success") {
+        const alertsList = document.getElementById("alertsList");
+        if (alertsList) {
+          alertsList.innerHTML = "";
+
+          if (result.data && result.data.length > 0) {
+            // Show only top 3 most critical alerts
+            const topAlerts = result.data.slice(0, 3);
+
+            topAlerts.forEach((course) => {
+              const alertDiv = document.createElement("div");
+              alertDiv.style.cssText = `
+                padding: 12px; 
+                border: 1px solid #fecaca; 
+                border-radius: 8px; 
+                background: #fef2f2; 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center;
+              `;
+
+              alertDiv.innerHTML = `
+                <div>
+                  <strong style="color: #dc2626;">${course.courseName}</strong>
+                  <p style="margin: 4px 0 0 0; color: #7f1d1d; font-size: 14px;">
+                    ${course.department} - ${course.utilizationPercentage}% capacity (${course.enrolledCount}/${course.capacity})
+                  </p>
+                </div>
+                <div style="background: #dc2626; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                  ${course.status}
+                </div>
+              `;
+
+              alertsList.appendChild(alertDiv);
+            });
+          } else {
+            alertsList.innerHTML =
+              '<p style="color: #10b981; font-style: italic;">✅ No high capacity alerts - all courses are within normal limits</p>';
+          }
+        }
+      }
+    },
+    function (error) {
+      console.error("Failed to load recent alerts:", error);
+      const alertsList = document.getElementById("alertsList");
+      if (alertsList) {
+        alertsList.innerHTML =
+          '<p style="color: #64748b; font-style: italic;">Failed to load alerts</p>';
+      }
+    }
+  );
+}
+
+function generateQuickBusinessReport() {
+  // Show loading state
+  const alertsList = document.getElementById("alertsList");
+  if (alertsList) {
+    alertsList.innerHTML =
+      '<p style="color: #64748b; font-style: italic;">🔄 Generating Business School report...</p>';
+  }
+
+  AjaxHelper.get(
+    "/api/reports/business-school-capacity",
+    function (result) {
+      if (result.status === "Success") {
+        const alertsList = document.getElementById("alertsList");
+        if (alertsList) {
+          alertsList.innerHTML = "";
+
+          // Add summary header
+          const summaryDiv = document.createElement("div");
+          summaryDiv.style.cssText = `
+            padding: 16px; 
+            border: 2px solid #3b82f6; 
+            border-radius: 8px; 
+            background: #eff6ff; 
+            margin-bottom: 12px;
+          `;
+
+          summaryDiv.innerHTML = `
+            <h5 style="margin: 0 0 8px 0; color: #1e40af; display: flex; align-items: center; gap: 8px;">
+              📊 Business School Report Summary
+            </h5>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; font-size: 14px;">
+              <div><strong>Department:</strong> ${result.summary.department}</div>
+              <div><strong>Courses Found:</strong> ${result.summary.totalCourses}</div>
+              <div><strong>Threshold:</strong> ${result.summary.threshold}%</div>
+              <div><strong>Avg Utilization:</strong> ${result.summary.averageUtilization}%</div>
+            </div>
+          `;
+
+          alertsList.appendChild(summaryDiv);
+
+          if (result.data && result.data.length > 0) {
+            result.data.forEach((course) => {
+              const courseDiv = document.createElement("div");
+              courseDiv.style.cssText = `
+                padding: 12px; 
+                border: 1px solid #d1d5db; 
+                border-radius: 8px; 
+                background: white; 
+                margin-bottom: 8px;
+              `;
+
+              courseDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <strong style="color: #1e293b;">${
+                      course.courseName
+                    }</strong>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">
+                      Instructor: ${course.instructor} | Enrolled: ${
+                course.enrolledStudents
+              }/${course.totalCapacity}
+                    </p>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="background: ${
+                      course.utilizationPercentage >= 95 ? "#dc2626" : "#ea580c"
+                    }; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-bottom: 4px;">
+                      ${course.utilizationPercentage}%
+                    </div>
+                    <div style="color: #64748b; font-size: 12px;">${
+                      course.status
+                    }</div>
+                  </div>
+                </div>
+              `;
+
+              alertsList.appendChild(courseDiv);
+            });
+          } else {
+            const noDataDiv = document.createElement("div");
+            noDataDiv.innerHTML =
+              '<p style="color: #10b981; font-style: italic;">✅ No Business school courses found above the capacity threshold</p>';
+            alertsList.appendChild(noDataDiv);
+          }
+        }
+      }
+    },
+    function (error) {
+      console.error("Failed to generate business report:", error);
+      const alertsList = document.getElementById("alertsList");
+      if (alertsList) {
+        alertsList.innerHTML =
+          '<p style="color: #ef4444; font-style: italic;">❌ Failed to generate Business School report</p>';
+      }
+    }
+  );
+}
+
+function generateHighCapacityAlert() {
+  // Redirect to full dashboard with capacity focus
+  window.location.href = "/reports#capacity";
+}
+
+function generateFacultyWorkloadReport() {
+  // Show loading state
+  const alertsList = document.getElementById("alertsList");
+  if (alertsList) {
+    alertsList.innerHTML =
+      '<p style="color: #64748b; font-style: italic;">🔄 Loading faculty workload summary...</p>';
+  }
+
+  AjaxHelper.get(
+    "/api/reports/faculty-workload",
+    function (result) {
+      if (result.status === "Success") {
+        const alertsList = document.getElementById("alertsList");
+        if (alertsList) {
+          alertsList.innerHTML = "";
+
+          // Add summary header
+          const summaryDiv = document.createElement("div");
+          summaryDiv.style.cssText = `
+            padding: 16px; 
+            border: 2px solid #f59e0b; 
+            border-radius: 8px; 
+            background: #fffbeb; 
+            margin-bottom: 12px;
+          `;
+
+          const totalFaculty = result.data.length;
+          const totalCourses = result.data.reduce(
+            (sum, faculty) => sum + faculty.numberOfCourses,
+            0
+          );
+          const totalStudents = result.data.reduce(
+            (sum, faculty) => sum + faculty.totalEnrolledStudents,
+            0
+          );
+
+          summaryDiv.innerHTML = `
+            <h5 style="margin: 0 0 8px 0; color: #d97706; display: flex; align-items: center; gap: 8px;">
+              👥 Faculty Workload Summary
+            </h5>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; font-size: 14px;">
+              <div><strong>Total Faculty:</strong> ${totalFaculty}</div>
+              <div><strong>Total Courses:</strong> ${totalCourses}</div>
+              <div><strong>Total Students:</strong> ${totalStudents}</div>
+              <div><strong>Avg Courses/Faculty:</strong> ${(
+                totalCourses / totalFaculty
+              ).toFixed(1)}</div>
+            </div>
+          `;
+
+          alertsList.appendChild(summaryDiv);
+
+          // Show top 5 faculty by workload
+          const topFaculty = result.data
+            .sort((a, b) => b.numberOfCourses - a.numberOfCourses)
+            .slice(0, 5);
+
+          topFaculty.forEach((faculty) => {
+            const facultyDiv = document.createElement("div");
+            facultyDiv.style.cssText = `
+              padding: 12px; 
+              border: 1px solid #d1d5db; 
+              border-radius: 8px; 
+              background: white; 
+              margin-bottom: 8px;
+            `;
+
+            facultyDiv.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="color: #1e293b;">${faculty.facultyName}</strong>
+                  <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">
+                    Department: ${faculty.department}
+                  </p>
+                </div>
+                <div style="text-align: right; font-size: 14px;">
+                  <div style="color: #1e293b; font-weight: 600;">${faculty.numberOfCourses} courses</div>
+                  <div style="color: #64748b;">${faculty.totalEnrolledStudents} students</div>
+                  <div style="color: #64748b; font-size: 12px;">Avg: ${faculty.avgStudentsPerCourse}/course</div>
+                </div>
+              </div>
+            `;
+
+            alertsList.appendChild(facultyDiv);
+          });
+        }
+      }
+    },
+    function (error) {
+      console.error("Failed to generate faculty workload report:", error);
+      const alertsList = document.getElementById("alertsList");
+      if (alertsList) {
+        alertsList.innerHTML =
+          '<p style="color: #ef4444; font-style: italic;">❌ Failed to generate faculty workload report</p>';
+      }
+    }
+  );
 }
