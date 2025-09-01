@@ -9,7 +9,7 @@ class User(ABC):
     def adduser(self):
         pass
 
-    def exists():
+    def exists(self):
         pass
     
     @abstractmethod
