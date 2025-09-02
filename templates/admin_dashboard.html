@@ -32,6 +32,7 @@
       <button onclick="showTab('course-management')" class="active">
         Course Management
       </button>
+      <button onclick="showTab('course-requests')">Course Requests</button>
       <button onclick="showTab('user-management')">User Management</button>
       <button onclick="showTab('reports')">Reports & Analytics</button>
       <button onclick="showTab('settings')">System Settings</button>
@@ -73,6 +74,53 @@
             <!-- Dynamic rows will be inserted here -->
           </tbody>
         </table>
+      </section>
+
+      <!-- Course Requests Management -->
+      <section id="course-requests" class="tab-content">
+        <div class="section-header">
+          <h3>Course Change Requests</h3>
+          <div class="request-stats">
+            <span class="stat-item">
+              <span class="stat-label">Pending:</span>
+              <span class="stat-value" id="pending-count">0</span>
+            </span>
+            <span class="stat-item">
+              <span class="stat-label">Total Requests:</span>
+              <span class="stat-value" id="total-requests">0</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="requests-container">
+          <div class="filters-section">
+            <label for="status-filter">Filter by Status:</label>
+            <select id="status-filter" onchange="filterRequests()">
+              <option value="all">All Requests</option>
+              <option value="Pending" selected>Pending Only</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+
+          <table id="requests-table">
+            <thead>
+              <tr>
+                <th>Request ID</th>
+                <th>Faculty</th>
+                <th>Course</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="requests-table-body">
+              <!-- Dynamic rows will be inserted here -->
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- User Management -->

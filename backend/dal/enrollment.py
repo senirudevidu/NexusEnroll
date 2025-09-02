@@ -138,3 +138,64 @@ class Enrollment:
         
         statistics = cursor.fetchall()
         return statistics
+
+    def get_class_roster(self, cursor, faculty_id, course_id):
+        """Get class roster for a specific course taught by a faculty member"""
+        # First verify that the faculty member teaches this course
+        verification_query = """
+        SELECT c.course_id, c.courseName, 
+               CONCAT(u.firstName, ' ', u.lastName) as instructor_name
+        FROM Course c
+        JOIN Users u ON c.facultyMem_Id = u.user_id
+        WHERE c.course_id = %s AND c.facultyMem_Id = %s
+        """
+        cursor.execute(verification_query, (course_id, faculty_id))
+        course_info = cursor.fetchone()
+        
+        if not course_info:
+            return {"status": "Error", "message": "Course not found or access denied"}
+        
+        # Get enrolled students with contact information
+        roster_query = """
+        SELECT 
+            e.enrollment_id,
+            e.student_id,
+            u.firstName,
+            u.lastName,
+            u.email,
+            u.mobileNo,
+            e.enrollmentStatus,
+            e.markStatus
+        FROM Enrollment e
+        JOIN Student s ON e.student_id = s.student_Id
+        JOIN Users u ON s.student_Id = u.user_id
+        WHERE e.course_id = %s AND e.enrollmentStatus = 'Active'
+        ORDER BY u.lastName, u.firstName
+        """
+        cursor.execute(roster_query, (course_id,))
+        students = cursor.fetchall()
+        
+        return {
+            "status": "Success",
+            "course_info": {
+                "course_id": course_info[0],
+                "course_name": course_info[1],
+                "instructor": course_info[2]
+            },
+            "students": students
+        }
+
+    def get_faculty_courses(self, cursor, faculty_id):
+        """Get all courses taught by a specific faculty member"""
+        query = """
+        SELECT c.course_id, c.courseName, c.description, c.capacity, c.availableSeats,
+               (c.capacity - c.availableSeats) as enrolled_count,
+               d.deptName
+        FROM Course c
+        JOIN Department d ON c.dept_Id = d.dept_Id
+        WHERE c.facultyMem_Id = %s
+        ORDER BY c.courseName
+        """
+        cursor.execute(query, (faculty_id,))
+        courses = cursor.fetchall()
+        return courses

@@ -7,7 +7,19 @@ function showTab(tabId) {
   document
     .querySelectorAll(".tabs button")
     .forEach((btn) => btn.classList.remove("active"));
-  event.target.classList.add("active");
+
+  // Handle cases where there's no event (e.g., during initialization)
+  if (event && event.target) {
+    event.target.classList.add("active");
+  } else {
+    // Find and activate the button for this tab
+    const targetButton = document.querySelector(
+      `[onclick="showTab('${tabId}')"]`
+    );
+    if (targetButton) {
+      targetButton.classList.add("active");
+    }
+  }
 
   if (tabId === "course-management") {
     loadCourses();
@@ -15,6 +27,8 @@ function showTab(tabId) {
     loadUsers();
   } else if (tabId === "reports") {
     loadReports();
+  } else if (tabId === "course-requests") {
+    loadCourseRequests();
   }
 }
 
@@ -982,3 +996,176 @@ function generateFacultyWorkloadReport() {
     }
   );
 }
+
+// Course Request Management Functions
+let allRequests = [];
+let currentAdminId = 1; // This should be set from session
+
+async function loadCourseRequests() {
+  try {
+    const response = await fetch("/api/course-requests/pending");
+    const result = await response.json();
+
+    if (result.status === "Success") {
+      allRequests = result.requests;
+      displayRequests(allRequests);
+      updateRequestStats();
+    } else {
+      console.error("Error loading requests:", result.message);
+    }
+  } catch (error) {
+    console.error("Error loading course requests:", error);
+  }
+}
+
+function displayRequests(requests) {
+  const tbody = document.getElementById("requests-table-body");
+  tbody.innerHTML = "";
+
+  if (requests.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align: center; padding: 20px; color: #666;">
+          No requests found
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  requests.forEach((request) => {
+    const row = document.createElement("tr");
+    const statusClass =
+      request[6] === "Pending"
+        ? "status-pending"
+        : request[6] === "Approved"
+        ? "status-approved"
+        : "status-rejected";
+
+    row.innerHTML = `
+      <td>${request[0]}</td>
+      <td>${request[7]} ${request[8]}</td>
+      <td title="${request[9]}">${
+      request[9].length > 30 ? request[9].substring(0, 30) + "..." : request[9]
+    }</td>
+      <td><span class="request-type-badge">${request[3]}</span></td>
+      <td title="${request[4]}">${
+      request[4].length > 40 ? request[4].substring(0, 40) + "..." : request[4]
+    }</td>
+      <td>${new Date(request[5]).toLocaleDateString()}</td>
+      <td><span class="status-badge ${statusClass}">${request[6]}</span></td>
+      <td>
+        ${
+          request[6] === "Pending"
+            ? `
+          <button class="action-btn approve-btn" onclick="approveRequest(${request[0]})">
+            ✓ Approve
+          </button>
+          <button class="action-btn reject-btn" onclick="rejectRequest(${request[0]})">
+            ✗ Reject
+          </button>
+        `
+            : `
+          <span class="processed-badge">Processed</span>
+        `
+        }
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function updateRequestStats() {
+  const pendingCount = allRequests.filter((req) => req[6] === "Pending").length;
+  const totalCount = allRequests.length;
+
+  document.getElementById("pending-count").textContent = pendingCount;
+  document.getElementById("total-requests").textContent = totalCount;
+}
+
+function filterRequests() {
+  const statusFilter = document.getElementById("status-filter").value;
+
+  if (statusFilter === "all") {
+    displayRequests(allRequests);
+  } else {
+    const filteredRequests = allRequests.filter(
+      (req) => req[6] === statusFilter
+    );
+    displayRequests(filteredRequests);
+  }
+}
+
+async function approveRequest(requestId) {
+  if (
+    !confirm(
+      "Are you sure you want to approve this request? This action cannot be undone."
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/course-requests/${requestId}/approve`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        admin_id: currentAdminId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.status === "Success") {
+      alert("Request approved successfully!");
+      loadCourseRequests(); // Refresh the list
+    } else {
+      alert("Error approving request: " + result.message);
+    }
+  } catch (error) {
+    console.error("Error approving request:", error);
+    alert("Error approving request. Please try again.");
+  }
+}
+
+async function rejectRequest(requestId) {
+  if (
+    !confirm(
+      "Are you sure you want to reject this request? This action cannot be undone."
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/course-requests/${requestId}/reject`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        admin_id: currentAdminId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.status === "Success") {
+      alert("Request rejected successfully!");
+      loadCourseRequests(); // Refresh the list
+    } else {
+      alert("Error rejecting request: " + result.message);
+    }
+  } catch (error) {
+    console.error("Error rejecting request:", error);
+    alert("Error rejecting request. Please try again.");
+  }
+}
+
+// Initialize the page when DOM is loaded
+document.addEventListener("DOMContentLoaded", function () {
+  // Load the course management tab by default (matches the HTML default active tab)
+  showTab("course-management");
+});

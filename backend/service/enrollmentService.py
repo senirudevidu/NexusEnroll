@@ -1,6 +1,7 @@
 from backend.dal.enrollment import Enrollment
 from backend.dal.course import Course
 from backend.dal.user import Student
+from backend.service.notificationService import NotificationManager
 from datetime import datetime, time
 
 class EnrollmentService:
@@ -9,6 +10,8 @@ class EnrollmentService:
         self.enrollment = Enrollment(self.db)
         self.course = Course(self.db)
         self.student = Student(self.db)
+        # Initialize notification system using Observer pattern
+        self.notification_manager = NotificationManager(self.db)
 
     def enroll_student_in_course(self, student_id, course_id):
         """Main enrollment method with all validation checks"""
@@ -18,29 +21,43 @@ class EnrollmentService:
         try:
             # Step 1: Check if student is already enrolled in this course
             if self.enrollment.check_existing_enrollment(cursor, student_id, course_id):
-                return {"status": "Error", "message": "Student is already enrolled in this course"}
+                error_msg = "Student is already enrolled in this course"
+                # Get course name for notification
+                course_data = self.course.getCourseById(cursor, course_id)
+                course_name = course_data[1] if course_data else "Unknown Course"
+                self.notification_manager.notify_enrollment_failed(student_id, course_id, course_name, error_msg)
+                return {"status": "Error", "message": error_msg}
 
             # Step 2: Check course capacity
             course_data = self.course.getCourseById(cursor, course_id)
             if not course_data:
-                return {"status": "Error", "message": "Course not found"}
+                error_msg = "Course not found"
+                self.notification_manager.notify_system_error("Course Lookup", error_msg, "Enrollment Service")
+                return {"status": "Error", "message": error_msg}
             
             # course_data format: (course_id, courseName, description, capacity, availableSeats, credits, degree_ID, dept_Id, preReqYear, allowedDeptID, facultyMem_Id, addedBy)
+            course_name = course_data[1]
             available_seats = course_data[4]
             if available_seats <= 0:
-                return {"status": "Error", "message": "Course is full. No available seats."}
+                error_msg = "Course is full. No available seats."
+                self.notification_manager.notify_enrollment_failed(student_id, course_id, course_name, error_msg)
+                return {"status": "Error", "message": error_msg}
 
             # Step 3: Check prerequisites (year requirement)
             prerequisite_year = course_data[8]
             student_year = self._get_student_year(cursor, student_id)
             
             if student_year < prerequisite_year:
-                return {"status": "Error", "message": f"Student must be in year {prerequisite_year} or higher to enroll in this course"}
+                error_msg = f"Student must be in year {prerequisite_year} or higher to enroll in this course"
+                self.notification_manager.notify_enrollment_failed(student_id, course_id, course_name, error_msg)
+                return {"status": "Error", "message": error_msg}
 
             # Step 4: Check for time conflicts
             time_conflict = self._check_time_conflicts(cursor, student_id, course_id)
             if time_conflict:
-                return {"status": "Error", "message": f"Time conflict detected with course: {time_conflict}"}
+                error_msg = f"Time conflict detected with course: {time_conflict}"
+                self.notification_manager.notify_enrollment_failed(student_id, course_id, course_name, error_msg)
+                return {"status": "Error", "message": error_msg}
 
             # Step 5: All validations passed, proceed with enrollment
             enrollment_result = self.enrollment.enroll_student(cursor, conn, student_id, course_id)
@@ -49,10 +66,32 @@ class EnrollmentService:
                 # Update course capacity
                 self.enrollment.update_course_capacity(cursor, conn, course_id, increment=False)
                 
+                # Trigger notification using Observer pattern
+                course_name = course_data[1]  # courseName from course_data
+                self.notification_manager.notify_enrollment_successful(student_id, course_id, course_name)
+                
+                # Check for capacity warnings
+                if course_data[4] <= 3:  # If available seats <= 3
+                    self.notification_manager.notify_capacity_warning(
+                        course_id, course_name, course_data[4] - 1, course_data[3]
+                    )
+            else:
+                # Notify about enrollment failure
+                course_name = course_data[1]
+                self.notification_manager.notify_enrollment_failed(
+                    student_id, course_id, course_name, enrollment_result.get("message", "Unknown error")
+                )
+                
             return enrollment_result
 
         except Exception as e:
             conn.rollback()
+            # Notify about system error
+            self.notification_manager.notify_system_error(
+                "Enrollment Exception", 
+                str(e), 
+                "Enrollment Service - enroll_student_in_course"
+            )
             return {"status": "Error", "message": str(e)}
         finally:
             cursor.close()
@@ -70,6 +109,8 @@ class EnrollmentService:
                 return {"status": "Error", "message": "Enrollment not found"}
 
             course_id = enrollment_data[2]
+            student_id = enrollment_data[1]
+            course_name = enrollment_data[3]  # courseName from enrollment_data
             
             # Drop the enrollment
             drop_result = self.enrollment.drop_enrollment(cursor, conn, enrollment_id)
@@ -77,6 +118,9 @@ class EnrollmentService:
             if drop_result["status"] == "Success":
                 # Update course capacity (increase available seats)
                 self.enrollment.update_course_capacity(cursor, conn, course_id, increment=True)
+                
+                # Trigger notification using Observer pattern
+                self.notification_manager.notify_course_dropped(student_id, course_id, course_name)
                 
             return drop_result
 
@@ -250,3 +294,44 @@ class EnrollmentService:
         finally:
             cursor.close()
             conn.close()
+
+    def get_notification_statistics(self):
+        """Get notification system statistics"""
+        try:
+            return self.notification_manager.get_notification_statistics()
+        except Exception as e:
+            return {
+                "status": "Error", 
+                "message": f"Failed to get notification statistics: {str(e)}"
+            }
+    
+    def demo_notification_system(self):
+        """Run a demonstration of the notification system"""
+        try:
+            self.notification_manager.demo_notification_system()
+            return {"status": "Success", "message": "Notification demo completed"}
+        except Exception as e:
+            return {
+                "status": "Error", 
+                "message": f"Failed to run notification demo: {str(e)}"
+            }
+    
+    def manage_notification_observers(self, action, observer_type=None):
+        """Manage notification observers (attach/detach)"""
+        try:
+            if action == "detach" and observer_type:
+                self.notification_manager.detach_observer(observer_type)
+                return {"status": "Success", "message": f"{observer_type} observer detached"}
+            elif action == "attach" and observer_type:
+                self.notification_manager.attach_observer(observer_type)
+                return {"status": "Success", "message": f"{observer_type} observer attached"}
+            elif action == "attach_all":
+                self.notification_manager.attach_all_observers()
+                return {"status": "Success", "message": "All observers attached"}
+            else:
+                return {"status": "Error", "message": "Invalid action or missing observer_type"}
+        except Exception as e:
+            return {
+                "status": "Error", 
+                "message": f"Failed to manage observers: {str(e)}"
+            }

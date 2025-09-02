@@ -14,6 +14,9 @@ from backend.service.userService import UserService
 from backend.service.enrollmentService import EnrollmentService
 from backend.service.scheduleProgressService import ScheduleProgressService
 from backend.service.reportingService import ReportingService
+from backend.service.rosterService import RosterService
+from backend.service.gradeSubmissionService import GradeSubmissionService
+from backend.service.courseRequestService import CourseRequestService
 bp = Blueprint("routes",__name__)
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -50,12 +53,26 @@ def admin_dashboard():
 
 @bp.route('/faculty')
 def faculty_dashboard():
-    return render_template('faculty_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
+    # Set default values if session data is missing (for demo purposes)
+    first_name = session.get('firstName', 'Dr. Sarah')
+    last_name = session.get('lastName', 'Johnson')
+    faculty_id = session.get('user_id', 1)  # Get faculty ID from session, default to 1 for demo
+    return render_template('faculty_dashboard.html', firstName=first_name, lastName=last_name, facultyId=faculty_id)
+
+@bp.route('/roster-test')
+def roster_test():
+    """Test page for roster functionality"""
+    return render_template('roster_test.html')
 
 
 @bp.route('/student')
 def student_dashboard():
     return render_template('student_dashboard.html', firstName=session['firstName'], lastName=session['lastName'])
+
+@bp.route('/notification-demo')
+def notification_demo():
+    """Notification System Demo Page"""
+    return render_template('notification_demo.html')
 
 @bp.route('/addUserForm')
 def add_user_form():
@@ -286,6 +303,163 @@ def api_faculty():
     faculty = service.get_faculty_members()
     return jsonify(faculty)
 
+# ============= ROSTER MANAGEMENT ENDPOINTS =============
+
+@bp.route('/api/roster/<int:faculty_id>/<int:course_id>')
+def api_get_class_roster(faculty_id, course_id):
+    """Get class roster for a specific course taught by a faculty member"""
+    service = RosterService(dbconfig())
+    result = service.get_class_roster(faculty_id, course_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/roster/<int:faculty_id>/courses')
+def api_get_faculty_courses(faculty_id):
+    """Get all courses taught by a faculty member"""
+    service = RosterService(dbconfig())
+    result = service.get_faculty_courses(faculty_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/roster/<int:faculty_id>/<int:course_id>/export')
+def api_export_roster_csv(faculty_id, course_id):
+    """Export class roster to CSV"""
+    service = RosterService(dbconfig())
+    result = service.export_roster_csv(faculty_id, course_id)
+    
+    if result["status"] == "Success":
+        response = make_response(result["content"])
+        response.headers["Content-Disposition"] = f"attachment; filename={result['filename']}"
+        response.headers["Content-type"] = "text/csv"
+        return response
+    else:
+        return jsonify(result), 400
+
+# ============= GRADE SUBMISSION ENDPOINTS =============
+
+@bp.route('/api/grades/<int:faculty_id>/<int:course_id>')
+def api_get_course_for_grading(faculty_id, course_id):
+    """Get course enrollments for grade submission"""
+    service = GradeSubmissionService(dbconfig())
+    result = service.get_course_for_grading(faculty_id, course_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/grades/submit', methods=['POST'])
+def api_submit_batch_grades():
+    """Batch submit grades with individual validation"""
+    data = request.get_json()
+    
+    # Extract required fields
+    faculty_id = data.get('faculty_id')
+    course_id = data.get('course_id')
+    grade_submissions = data.get('grade_submissions', [])
+    
+    if not faculty_id or not course_id or not grade_submissions:
+        return jsonify({
+            "status": "Error",
+            "message": "Missing required fields: faculty_id, course_id, grade_submissions"
+        }), 400
+    
+    service = GradeSubmissionService(dbconfig())
+    result = service.submit_batch_grades(faculty_id, course_id, grade_submissions)
+    
+    if result["status"] in ["Success", "Completed"]:
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/grades/update/<int:enrollment_id>', methods=['PUT'])
+def api_update_pending_grade(enrollment_id):
+    """Update/correct a pending grade"""
+    data = request.get_json()
+    
+    faculty_id = data.get('faculty_id')
+    new_grade = data.get('grade')
+    
+    if not faculty_id or new_grade is None:
+        return jsonify({
+            "status": "Error",
+            "message": "Missing required fields: faculty_id, grade"
+        }), 400
+    
+    service = GradeSubmissionService(dbconfig())
+    result = service.update_single_grade(faculty_id, enrollment_id, new_grade)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/grades/finalize/<int:course_id>', methods=['PUT'])
+def api_finalize_course_grades(course_id):
+    """Finalize all pending grades for a course (set markStatus='Submitted')"""
+    data = request.get_json()
+    
+    faculty_id = data.get('faculty_id')
+    
+    if not faculty_id:
+        return jsonify({
+            "status": "Error",
+            "message": "Missing required field: faculty_id"
+        }), 400
+    
+    service = GradeSubmissionService(dbconfig())
+    result = service.finalize_all_grades(faculty_id, course_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/grades/summary/<int:faculty_id>/<int:course_id>')
+def api_get_grading_summary(faculty_id, course_id):
+    """Get detailed summary of grade submission status for a course"""
+    service = GradeSubmissionService(dbconfig())
+    result = service.get_grading_summary(faculty_id, course_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/grades/courses/<int:faculty_id>')
+def api_get_faculty_courses_grading_status(faculty_id):
+    """Get faculty courses with grading status information"""
+    service = GradeSubmissionService(dbconfig())
+    result = service.get_faculty_courses_with_grading_status(faculty_id)
+    
+    if result["status"] == "Success":
+        return jsonify(result), 200
+    else:
+        return jsonify(result), 400
+
+@bp.route('/api/grades/validate', methods=['POST'])
+def api_validate_grade():
+    """Validate grade format without saving"""
+    data = request.get_json()
+    grade = data.get('grade')
+    
+    if grade is None:
+        return jsonify({
+            "status": "Error",
+            "message": "Missing grade field"
+        }), 400
+    
+    service = GradeSubmissionService(dbconfig())
+    result = service.validate_grade_format(grade)
+    
+    return jsonify(result), 200
+
 # User Update Routes
 @bp.route('/api/users/<int:user_id>', methods=['PUT'])
 def api_update_user(user_id):
@@ -487,6 +661,74 @@ def api_get_available_courses_for_student(student_id):
             available_courses.append(course_data)
     
     return jsonify({"status": "Success", "courses": available_courses}), 200
+
+
+# ============ NOTIFICATION SYSTEM API ENDPOINTS ============
+
+@bp.route('/api/notifications/statistics')
+def api_notification_statistics():
+    """Get notification system statistics"""
+    try:
+        service = EnrollmentService(dbconfig())
+        result = service.get_notification_statistics()
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/notifications/demo', methods=['POST'])
+def api_notification_demo():
+    """Run notification system demonstration"""
+    try:
+        service = EnrollmentService(dbconfig())
+        result = service.demo_notification_system()
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/notifications/observers', methods=['POST'])
+def api_manage_notification_observers():
+    """Manage notification observers (attach/detach)"""
+    try:
+        data = request.get_json()
+        action = data.get('action')  # 'attach', 'detach', 'attach_all'
+        observer_type = data.get('observer_type')  # 'student', 'advisor', 'admin'
+        
+        service = EnrollmentService(dbconfig())
+        result = service.manage_notification_observers(action, observer_type)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/notifications/test-events', methods=['POST'])
+def api_test_notification_events():
+    """Test specific notification events"""
+    try:
+        data = request.get_json()
+        event_type = data.get('event_type')
+        student_id = data.get('student_id', 1)
+        course_id = data.get('course_id', 1)
+        course_name = data.get('course_name', 'Test Course')
+        
+        service = EnrollmentService(dbconfig())
+        
+        if event_type == 'course_dropped':
+            service.notification_manager.notify_course_dropped(student_id, course_id, course_name)
+        elif event_type == 'enrollment_successful':
+            service.notification_manager.notify_enrollment_successful(student_id, course_id, course_name)
+        elif event_type == 'enrollment_failed':
+            reason = data.get('reason', 'Test failure reason')
+            service.notification_manager.notify_enrollment_failed(student_id, course_id, course_name, reason)
+        elif event_type == 'system_error':
+            error_type = data.get('error_type', 'Test Error')
+            error_message = data.get('error_message', 'This is a test error')
+            component = data.get('component', 'Test Component')
+            service.notification_manager.notify_system_error(error_type, error_message, component)
+        else:
+            return jsonify({"status": "Error", "message": "Invalid event_type"}), 400
+        
+        return jsonify({"status": "Success", "message": f"Triggered {event_type} notification"}), 200
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
 
 
 # ============ SCHEDULE MANAGEMENT API ENDPOINTS ============
@@ -783,4 +1025,148 @@ def api_export_report_html():
     else:
         service.close_connection()
         return jsonify(report_result), 400
+
+
+# Course Request Management API Endpoints
+
+@bp.route('/api/course-requests', methods=['POST'])
+def submit_course_request():
+    """Instructor submits a course change request"""
+    try:
+        data = request.get_json()
+        faculty_id = data.get('faculty_id')
+        course_id = data.get('course_id')
+        request_type = data.get('requestType')
+        details = data.get('details')
+        
+        if not all([faculty_id, course_id, request_type, details]):
+            return jsonify({"status": "Error", "message": "Missing required fields"}), 400
+        
+        service = CourseRequestService(dbconfig())
+        result = service.submit_request(faculty_id, course_id, request_type, details)
+        
+        if result["status"] == "Success":
+            return jsonify(result), 201
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/course-requests/pending', methods=['GET'])
+def get_pending_requests():
+    """Admin views all pending course requests"""
+    try:
+        service = CourseRequestService(dbconfig())
+        result = service.get_pending_requests()
+        
+        if result["status"] == "Success":
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/course-requests/faculty/<int:faculty_id>', methods=['GET'])
+def get_faculty_requests(faculty_id):
+    """Get all requests submitted by a specific faculty member"""
+    try:
+        service = CourseRequestService(dbconfig())
+        result = service.get_faculty_requests(faculty_id)
+        
+        if result["status"] == "Success":
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/course-requests/<int:request_id>/approve', methods=['PUT'])
+def approve_request(request_id):
+    """Admin approves a course request"""
+    try:
+        data = request.get_json()
+        admin_id = data.get('admin_id')
+        
+        if not admin_id:
+            return jsonify({"status": "Error", "message": "Admin ID is required"}), 400
+        
+        service = CourseRequestService(dbconfig())
+        result = service.approve_request(request_id, admin_id)
+        
+        if result["status"] == "Success":
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/course-requests/<int:request_id>/reject', methods=['PUT'])
+def reject_request(request_id):
+    """Admin rejects a course request"""
+    try:
+        data = request.get_json()
+        admin_id = data.get('admin_id')
+        
+        if not admin_id:
+            return jsonify({"status": "Error", "message": "Admin ID is required"}), 400
+        
+        service = CourseRequestService(dbconfig())
+        result = service.reject_request(request_id, admin_id)
+        
+        if result["status"] == "Success":
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/course-requests/<int:request_id>', methods=['GET'])
+def get_request_details(request_id):
+    """Get details of a specific request"""
+    try:
+        service = CourseRequestService(dbconfig())
+        result = service.get_request_details(request_id)
+        
+        if result["status"] == "Success":
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 404
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/faculty/<int:faculty_id>/courses', methods=['GET'])
+def get_faculty_courses(faculty_id):
+    """Get all courses taught by a faculty member"""
+    try:
+        service = CourseRequestService(dbconfig())
+        result = service.get_faculty_courses(faculty_id)
+        
+        if result["status"] == "Success":
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
+
+@bp.route('/api/courses/prerequisite-options', methods=['GET'])
+def get_prerequisite_options():
+    """Get all courses that can be used as prerequisites"""
+    try:
+        service = CourseRequestService(dbconfig())
+        result = service.get_all_courses_for_prerequisite()
+        
+        if result["status"] == "Success":
+            return jsonify(result), 200
+        else:
+            return jsonify(result), 400
+            
+    except Exception as e:
+        return jsonify({"status": "Error", "message": str(e)}), 500
 
