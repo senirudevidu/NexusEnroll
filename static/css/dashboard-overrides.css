@@ -135,7 +135,7 @@
 }
 
 .tab-content {
-  display: none !important;
+  display: block !important;
 }
 
 .tab-content.active {

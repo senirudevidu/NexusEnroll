@@ -181,7 +181,7 @@ body {
 }
 
 .tab-pane {
-  display: none;
+  display: block;
   height: 100%;
 }
 
