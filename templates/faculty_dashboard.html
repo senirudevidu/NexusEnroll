@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusEnroll - Faculty Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename='css/faculty-consolidated.css')}}"
+    />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Blue Header Bar -->
+      <header class="nexus-header">
+        <div class="nexus-logo">
+          NexusEnroll <span class="nexus-portal-badge">Faculty Portal</span>
+        </div>
+        <div class="header-right">
+          <button class="btn btn-secondary" onclick="window.location.href='/'">
+            Back to Main
+          </button>
+        </div>
+      </header>
+
+      <!-- Welcome Section (Outside blue box) -->
+      <div class="welcome-section">
+        <h2 class="welcome-title">Welcome, {{firstName}} {{lastName}}</h2>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="tabs">
+        <button
+          class="tab-button active"
+          onclick="openTab('class-rosters', event)"
+        >
+          Class Rosters
+        </button>
+        <button class="tab-button" onclick="openTab('grade-submission', event)">
+          Grade Submission
+        </button>
+        <button class="tab-button" onclick="openTab('my-courses', event)">
+          My Courses
+        </button>
+        <button class="tab-button" onclick="openTab('course-requests', event)">
+          Course Requests
+        </button>
+      </nav>
+
+      <!-- Main Content Area -->
+      <div class="tab-content">
+        <!-- Class Rosters Tab (First) -->
+        <div id="class-rosters" class="tab-pane active">
+          <h3>View student information for your courses</h3>
+          <div class="roster-section">
+            <div class="course-selector">
+              <label for="roster-course-select">Select Course:</label>
+              <select id="roster-course-select" onchange="loadRoster()">
+                <option value="">-- Choose Course --</option>
+                <!-- Courses will be populated dynamically -->
+              </select>
+            </div>
+
+            <div class="roster-table" id="roster-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="roster-table-body">
+                  <!-- Roster will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade Submission Tab (Second) -->
+        <div id="grade-submission" class="tab-pane">
+          <h3>Submit final grades for your students</h3>
+          <div class="grade-section">
+            <div class="course-selector">
+              <label for="grade-course-select">Select Course:</label>
+              <select id="grade-course-select" onchange="loadGradeSheet()">
+                <option value="">-- Choose Course --</option>
+                <!-- Courses will be populated dynamically -->
+              </select>
+            </div>
+
+            <div class="grade-sheet" id="grade-sheet">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="grade-table-body">
+                  <!-- Grades will be populated here -->
+                </tbody>
+              </table>
+              <button
+                class="submit-btn"
+                onclick="showGradeSubmissionOptions()"
+                disabled
+              >
+                Submit Grades
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Courses Tab (Third) -->
+        <div id="my-courses" class="tab-pane">
+          <h3>Courses you are handling this semester</h3>
+          <div class="course-list" id="course-list-container">
+            <!-- Course cards will be populated dynamically -->
+            <div class="loading-message">Loading your courses...</div>
+          </div>
+        </div>
+
+        <!-- Course Requests Tab (Fourth) -->
+        <div id="course-requests" class="tab-pane">
+          <h3>Submit and track course change requests</h3>
+
+          <!-- Request Submission Form -->
+          <div class="request-form-section">
+            <h4>Submit New Request</h4>
+            <form id="course-request-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="request-course-select">Course:</label>
+                  <select id="request-course-select" required>
+                    <option value="">-- Select Course --</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="request-type-select">Request Type:</label>
+                  <select
+                    id="request-type-select"
+                    required
+                    onchange="updateRequestForm()"
+                  >
+                    <option value="">-- Select Type --</option>
+                    <option value="UpdateDescription">
+                      Update Description
+                    </option>
+                    <option value="ChangeCapacity">Change Capacity</option>
+                    <option value="AddPrerequisite">Add Prerequisite</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="request-details">Details:</label>
+                <div id="request-details-container">
+                  <textarea
+                    id="request-details"
+                    name="details"
+                    rows="4"
+                    placeholder="Enter request details..."
+                    required
+                  ></textarea>
+                </div>
+              </div>
+
+              <button type="submit" class="submit-btn">Submit Request</button>
+            </form>
+          </div>
+
+          <!-- Request History -->
+          <div class="request-history-section">
+            <h4>Request History</h4>
+            <div class="request-table" id="request-history-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Request ID</th>
+                    <th>Course</th>
+                    <th>Type</th>
+                    <th>Details</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Decision Date</th>
+                    <th>Approved By</th>
+                  </tr>
+                </thead>
+                <tbody id="request-history-body">
+                  <!-- Request history will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Faculty ID Data (Hidden) -->
+    <div
+      id="faculty-data"
+      data-faculty-id="{{ facultyId if facultyId else 1 }}"
+      style="display: none"
+    ></div>
+
+    <!-- JavaScript -->
+    <script type="text/javascript">
+      // Get faculty ID from data attribute (avoids template syntax in JS)
+      (function () {
+        var dataElement = document.getElementById("faculty-data");
+        var facultyId =
+          parseInt(dataElement.getAttribute("data-faculty-id")) || 1;
+
+        // Set global variable
+        window.FACULTY_ID = facultyId;
+
+        console.log("Faculty ID initialized:", window.FACULTY_ID);
+      })();
+    </script>
+
+    <script src="{{url_for('static', filename='js/faculty.js')}}"></script>
+  </body>
+</html>

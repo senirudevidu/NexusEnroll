@@ -1,0 +1,75 @@
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6fb;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 40px;
+}
+
+form#addDegree {
+  background: #fff;
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 32px 24px 24px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+label {
+  font-weight: 500;
+  color: #34495e;
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  padding: 10px 12px;
+  border: 1px solid #dfe6e9;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #f9fafc;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: #2980b9;
+  outline: none;
+}
+
+button[type="submit"] {
+  background: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+  background: #1a5a8a;
+}
+
+@media (max-width: 500px) {
+  form#addDegree {
+    max-width: 95vw;
+    padding: 18px 8px;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+}

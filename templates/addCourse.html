@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Add Course</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/addCourse.css') }}">
+</head>
+<body>
+	<h2>Add New Course</h2>
+	<form id="addCourse" method="POST">
+		<label for="courseName">Course Name:</label>
+		<input type="text" id="courseName" name="courseName" required placeholder="Enter course name"><br>
+
+		<label for="description">Description:</label>
+		<textarea id="description" name="description" required placeholder="Enter course description"></textarea><br>
+
+		<label for="capacity">Capacity:</label>
+		<input type="number" id="capacity" name="capacity" min="1" required placeholder="Enter course capacity"><br>
+
+		<label for="credits">Credits:</label>
+		<input type="number" id="credits" name="credits" min="0" required placeholder="Enter course credits"><br>
+
+		<label for="degree_ID">Degree:</label>
+		<select name="degree_ID">
+			<option value="">--Select Degree--</option>
+			{% for degree in degrees %}
+				<option value="{{degree[0]}}">{{degree[1]}}</option>
+			{% endfor %}
+		</select>
+
+		<label for="dept_Id">Department:</label>
+		<select name="dept_Id" id="department">
+			<option value="">--Select Department--</option>
+			{% for dept in departments %}
+				<option value="{{ dept[0] }}">{{ dept[1] }}</option>
+			{% endfor %}
+		</select>
+
+		<label for="preReqYear">Pre-requisite Year:</label>
+		<input type="number" id="preReqYear" name="preReqYear" min="1" max="4" placeholder="Only this year students can enroll" required><br>
+
+		<label for="facultyMem_Id">Faculty Member:</label>
+		<select name="facultyMem_Id" id="facultyMem_Id">
+			<option value="">--Select Faculty Member--</option>
+			{% for faculty in faculty_members %}
+				<option value="{{ faculty[0] }}">{{ faculty[1] }} {{ faculty[2] }}</option>
+			{% endfor %}
+		</select>
+
+		<button type="submit">Add Course</button>
+	</form>
+    <script src="{{ url_for('static', filename='js/formHelper.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/sendCourse.js') }}"></script>
+</body>
+</html>

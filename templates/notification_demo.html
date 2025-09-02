@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusEnroll - Notification System Demo</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/student.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      .notification-demo {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .demo-header {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 8px;
+      }
+
+      .demo-section {
+        margin: 30px 0;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background: #f8f9fa;
+      }
+
+      .demo-section h3 {
+        color: #34495e;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .demo-controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+
+      .control-panel {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+
+      .control-panel h4 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .control-panel h4 i {
+        margin-right: 10px;
+        color: #3498db;
+      }
+
+      .demo-btn {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        transition: background 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .demo-btn:hover {
+        background: #2980b9;
+      }
+
+      .demo-btn.success {
+        background: #27ae60;
+      }
+
+      .demo-btn.success:hover {
+        background: #229954;
+      }
+
+      .demo-btn.warning {
+        background: #f39c12;
+      }
+
+      .demo-btn.warning:hover {
+        background: #e67e22;
+      }
+
+      .demo-btn.danger {
+        background: #e74c3c;
+      }
+
+      .demo-btn.danger:hover {
+        background: #c0392b;
+      }
+
+      .notification-output {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        max-height: 400px;
+        overflow-y: auto;
+        margin: 20px 0;
+        white-space: pre-wrap;
+      }
+
+      .statistics-panel {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid #ddd;
+      }
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .stat-item:last-child {
+        border-bottom: none;
+      }
+
+      .stat-label {
+        font-weight: 600;
+        color: #34495e;
+      }
+
+      .stat-value {
+        color: #3498db;
+        font-weight: bold;
+      }
+
+      .observer-controls {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+        flex-wrap: wrap;
+      }
+
+      .observer-btn {
+        background: #95a5a6;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+        font-size: 12px;
+      }
+
+      .observer-btn.active {
+        background: #27ae60;
+      }
+
+      .observer-btn:hover {
+        background: #7f8c8d;
+      }
+
+      .observer-btn.active:hover {
+        background: #229954;
+      }
+
+      .form-group {
+        margin: 10px 0;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #34495e;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .clear-btn {
+        background: #95a5a6;
+        float: right;
+        margin-left: 10px;
+      }
+
+      .clear-btn:hover {
+        background: #7f8c8d;
+      }
+
+      .pattern-info {
+        background: #e8f4fd;
+        border-left: 4px solid #3498db;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 0 8px 8px 0;
+      }
+
+      .pattern-info h4 {
+        color: #2c3e50;
+        margin: 0 0 10px 0;
+      }
+
+      .pattern-info ul {
+        margin: 10px 0;
+        padding-left: 20px;
+      }
+
+      .pattern-info li {
+        margin: 5px 0;
+        color: #34495e;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="student-header">
+      <div class="logo">
+        NexusEnroll <span class="portal">Notification System Demo</span>
+      </div>
+      <button class="back-btn" onclick="window.location.href='/'">
+        <i class="fas fa-arrow-left"></i> Back to Main
+      </button>
+    </header>
+
+    <div class="notification-demo">
+      <!-- Demo Header -->
+      <div class="demo-header">
+        <h1>
+          <i class="fas fa-bell"></i> Observer Design Pattern Implementation
+        </h1>
+        <h2>NexusEnroll Notification System Demo</h2>
+        <p>
+          Demonstrating real-time notifications for enrollment events using the
+          Observer pattern
+        </p>
+      </div>
+
+      <!-- Pattern Information -->
+      <div class="pattern-info">
+        <h4>
+          <i class="fas fa-info-circle"></i> About the Observer Design Pattern
+        </h4>
+        <p>
+          The Observer pattern defines a one-to-many dependency between objects.
+          When the subject (enrollment events) changes state, all its dependents
+          (observers) are notified automatically.
+        </p>
+        <ul>
+          <li>
+            <strong>Subject:</strong> EnrollmentNotificationSubject - manages
+            enrollment events
+          </li>
+          <li>
+            <strong>Student Observer:</strong> Handles waitlist notifications
+            and enrollment confirmations
+          </li>
+          <li>
+            <strong>Advisor Observer:</strong> Notifies advisors about their
+            advisees' enrollment activities
+          </li>
+          <li>
+            <strong>Admin Observer:</strong> Tracks system-wide statistics and
+            error notifications
+          </li>
+        </ul>
+      </div>
+
+      <!-- Statistics Panel -->
+      <div class="demo-section">
+        <h3><i class="fas fa-chart-bar"></i> Notification System Statistics</h3>
+        <div class="statistics-panel" id="statisticsPanel">
+          <!-- Statistics will be loaded here -->
+        </div>
+        <button class="demo-btn" onclick="loadStatistics()">
+          <i class="fas fa-sync-alt"></i> Refresh Statistics
+        </button>
+      </div>
+
+      <!-- Observer Management -->
+      <div class="demo-section">
+        <h3><i class="fas fa-users-cog"></i> Observer Management</h3>
+        <div class="control-panel">
+          <h4><i class="fas fa-toggle-on"></i> Manage Active Observers</h4>
+          <p>
+            Attach or detach observers to see how the system responds to
+            different configurations.
+          </p>
+          <div class="observer-controls">
+            <button
+              class="observer-btn active"
+              id="studentObserver"
+              onclick="toggleObserver('student')"
+            >
+              <i class="fas fa-user-graduate"></i> Student Observer
+            </button>
+            <button
+              class="observer-btn active"
+              id="advisorObserver"
+              onclick="toggleObserver('advisor')"
+            >
+              <i class="fas fa-user-tie"></i> Advisor Observer
+            </button>
+            <button
+              class="observer-btn active"
+              id="adminObserver"
+              onclick="toggleObserver('admin')"
+            >
+              <i class="fas fa-user-shield"></i> Admin Observer
+            </button>
+          </div>
+          <button class="demo-btn" onclick="attachAllObservers()">
+            <i class="fas fa-link"></i> Attach All Observers
+          </button>
+        </div>
+      </div>
+
+      <!-- Event Simulation -->
+      <div class="demo-section">
+        <h3><i class="fas fa-play-circle"></i> Event Simulation</h3>
+        <div class="demo-controls">
+          <!-- Enrollment Events -->
+          <div class="control-panel">
+            <h4><i class="fas fa-graduation-cap"></i> Enrollment Events</h4>
+            <button
+              class="demo-btn success"
+              onclick="simulateEvent('enrollment_successful')"
+            >
+              <i class="fas fa-check-circle"></i> Successful Enrollment
+            </button>
+            <button
+              class="demo-btn danger"
+              onclick="simulateEvent('enrollment_failed')"
+            >
+              <i class="fas fa-times-circle"></i> Failed Enrollment
+            </button>
+            <button
+              class="demo-btn warning"
+              onclick="simulateEvent('course_dropped')"
+            >
+              <i class="fas fa-minus-circle"></i> Course Dropped
+            </button>
+          </div>
+
+          <!-- System Events -->
+          <div class="control-panel">
+            <h4><i class="fas fa-server"></i> System Events</h4>
+            <button
+              class="demo-btn danger"
+              onclick="simulateEvent('system_error')"
+            >
+              <i class="fas fa-exclamation-triangle"></i> System Error
+            </button>
+            <button
+              class="demo-btn warning"
+              onclick="simulateEvent('capacity_warning')"
+            >
+              <i class="fas fa-users"></i> Capacity Warning
+            </button>
+          </div>
+
+          <!-- Custom Event -->
+          <div class="control-panel">
+            <h4><i class="fas fa-cogs"></i> Custom Event</h4>
+            <div class="form-group">
+              <label>Event Type:</label>
+              <select id="customEventType">
+                <option value="enrollment_successful">
+                  Enrollment Successful
+                </option>
+                <option value="enrollment_failed">Enrollment Failed</option>
+                <option value="course_dropped">Course Dropped</option>
+                <option value="system_error">System Error</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Student ID:</label>
+              <input type="number" id="customStudentId" value="1" min="1" />
+            </div>
+            <div class="form-group">
+              <label>Course Name:</label>
+              <input
+                type="text"
+                id="customCourseName"
+                value="Advanced Database Systems"
+              />
+            </div>
+            <button class="demo-btn" onclick="simulateCustomEvent()">
+              <i class="fas fa-rocket"></i> Trigger Custom Event
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo Scenarios -->
+      <div class="demo-section">
+        <h3><i class="fas fa-theater-masks"></i> Demo Scenarios</h3>
+        <div class="demo-controls">
+          <div class="control-panel">
+            <h4><i class="fas fa-play"></i> Pre-built Scenarios</h4>
+            <p>Run comprehensive demonstrations of the notification system:</p>
+            <button class="demo-btn" onclick="runFullDemo()">
+              <i class="fas fa-play-circle"></i> Run Full Demo
+            </button>
+            <button class="demo-btn" onclick="runPeakEnrollmentScenario()">
+              <i class="fas fa-chart-line"></i> Peak Enrollment Scenario
+            </button>
+            <button class="demo-btn" onclick="runErrorHandlingScenario()">
+              <i class="fas fa-bug"></i> Error Handling Scenario
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output Console -->
+      <div class="demo-section">
+        <h3><i class="fas fa-terminal"></i> Notification Output Console</h3>
+        <div class="notification-output" id="notificationOutput">
+          Welcome to the NexusEnroll Notification System Demo! This console will
+          display all notification events triggered by the Observer pattern.
+          Click any of the demo buttons above to see the system in action. 🎯
+          The Observer pattern ensures: - Loose coupling between components -
+          Automatic notification of all interested parties - Easy addition of
+          new observer types - Centralized event management
+        </div>
+        <button class="clear-btn demo-btn" onclick="clearOutput()">
+          <i class="fas fa-trash"></i> Clear Console
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let observerStates = {
+        student: true,
+        advisor: true,
+        admin: true,
+      };
+
+      // Load initial statistics
+      window.onload = function () {
+        loadStatistics();
+      };
+
+      async function loadStatistics() {
+        try {
+          const response = await fetch("/api/notifications/statistics");
+          const data = await response.json();
+
+          if (data.status !== "Error") {
+            displayStatistics(data);
+          } else {
+            appendToOutput(`❌ Error loading statistics: ${data.message}`);
+          }
+        } catch (error) {
+          appendToOutput(`❌ Failed to load statistics: ${error.message}`);
+        }
+      }
+
+      function displayStatistics(stats) {
+        const panel = document.getElementById("statisticsPanel");
+
+        panel.innerHTML = `
+                <div class="stat-item">
+                    <span class="stat-label"><i class="fas fa-users"></i> Active Observers</span>
+                    <span class="stat-value">${
+                      stats.observers_count || 0
+                    }</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label"><i class="fas fa-bell"></i> Total Notifications</span>
+                    <span class="stat-value">${
+                      stats.total_notifications || 0
+                    }</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label"><i class="fas fa-list"></i> Observer Types</span>
+                    <span class="stat-value">${
+                      stats.observers ? stats.observers.join(", ") : "None"
+                    }</span>
+                </div>
+            `;
+
+        if (stats.notification_log && stats.notification_log.length > 0) {
+          panel.innerHTML += `
+                    <div class="stat-item">
+                        <span class="stat-label"><i class="fas fa-clock"></i> Recent Notifications</span>
+                        <span class="stat-value">${stats.notification_log.length} recent events</span>
+                    </div>
+                `;
+        }
+      }
+
+      async function toggleObserver(observerType) {
+        const button = document.getElementById(`${observerType}Observer`);
+        const isActive = button.classList.contains("active");
+
+        try {
+          const action = isActive ? "detach" : "attach";
+          const response = await fetch("/api/notifications/observers", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              action: action,
+              observer_type: observerType,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.status === "Success") {
+            button.classList.toggle("active");
+            observerStates[observerType] = !isActive;
+            appendToOutput(`🔧 ${data.message}`);
+            loadStatistics(); // Refresh stats
+          } else {
+            appendToOutput(`❌ Error managing observer: ${data.message}`);
+          }
+        } catch (error) {
+          appendToOutput(`❌ Failed to toggle observer: ${error.message}`);
+        }
+      }
+
+      async function attachAllObservers() {
+        try {
+          const response = await fetch("/api/notifications/observers", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              action: "attach_all",
+            }),
+          });
+
+          const data = await response.json();
+
+          if (data.status === "Success") {
+            // Update all button states
+            document.querySelectorAll(".observer-btn").forEach((btn) => {
+              btn.classList.add("active");
+            });
+            observerStates = { student: true, advisor: true, admin: true };
+            appendToOutput(`🔧 ${data.message}`);
+            loadStatistics();
+          } else {
+            appendToOutput(`❌ Error attaching observers: ${data.message}`);
+          }
+        } catch (error) {
+          appendToOutput(`❌ Failed to attach observers: ${error.message}`);
+        }
+      }
+
+      async function simulateEvent(eventType) {
+        const eventData = {
+          event_type: eventType,
+          student_id: Math.floor(Math.random() * 5) + 1,
+          course_id: Math.floor(Math.random() * 10) + 1,
+          course_name: getRandomCourseName(),
+        };
+
+        // Add specific data based on event type
+        if (eventType === "enrollment_failed") {
+          eventData.reason = getRandomFailureReason();
+        } else if (eventType === "system_error") {
+          eventData.error_type = "Database Connection";
+          eventData.error_message = "Connection timeout occurred";
+          eventData.component = "Enrollment Service";
+        }
+
+        try {
+          appendToOutput(`🎬 Triggering ${eventType} event...`);
+
+          const response = await fetch("/api/notifications/test-events", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(eventData),
+          });
+
+          const data = await response.json();
+
+          if (data.status === "Success") {
+            appendToOutput(`✅ ${data.message}`);
+            appendToOutput(
+              `📊 Event data: ${JSON.stringify(eventData, null, 2)}`
+            );
+          } else {
+            appendToOutput(`❌ Error triggering event: ${data.message}`);
+          }
+
+          // Refresh statistics
+          setTimeout(loadStatistics, 1000);
+        } catch (error) {
+          appendToOutput(`❌ Failed to trigger event: ${error.message}`);
+        }
+      }
+
+      async function simulateCustomEvent() {
+        const eventType = document.getElementById("customEventType").value;
+        const studentId =
+          parseInt(document.getElementById("customStudentId").value) || 1;
+        const courseName =
+          document.getElementById("customCourseName").value || "Custom Course";
+
+        const eventData = {
+          event_type: eventType,
+          student_id: studentId,
+          course_id: Math.floor(Math.random() * 10) + 1,
+          course_name: courseName,
+        };
+
+        if (eventType === "enrollment_failed") {
+          eventData.reason = "Custom test failure reason";
+        } else if (eventType === "system_error") {
+          eventData.error_type = "Custom Error";
+          eventData.error_message = "Custom error message for testing";
+          eventData.component = "Custom Component";
+        }
+
+        try {
+          appendToOutput(`🎬 Triggering custom ${eventType} event...`);
+
+          const response = await fetch("/api/notifications/test-events", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(eventData),
+          });
+
+          const data = await response.json();
+
+          if (data.status === "Success") {
+            appendToOutput(`✅ ${data.message}`);
+            appendToOutput(
+              `📊 Custom event data: ${JSON.stringify(eventData, null, 2)}`
+            );
+          } else {
+            appendToOutput(`❌ Error triggering custom event: ${data.message}`);
+          }
+
+          setTimeout(loadStatistics, 1000);
+        } catch (error) {
+          appendToOutput(`❌ Failed to trigger custom event: ${error.message}`);
+        }
+      }
+
+      async function runFullDemo() {
+        appendToOutput(`🎭 Starting comprehensive notification system demo...`);
+
+        try {
+          const response = await fetch("/api/notifications/demo", {
+            method: "POST",
+          });
+
+          const data = await response.json();
+
+          if (data.status === "Success") {
+            appendToOutput(`✅ ${data.message}`);
+            appendToOutput(
+              `🎯 Check the server console for detailed notification outputs`
+            );
+          } else {
+            appendToOutput(`❌ Demo failed: ${data.message}`);
+          }
+
+          setTimeout(loadStatistics, 2000);
+        } catch (error) {
+          appendToOutput(`❌ Failed to run demo: ${error.message}`);
+        }
+      }
+
+      async function runPeakEnrollmentScenario() {
+        appendToOutput(`📈 Running peak enrollment scenario...`);
+
+        // Simulate multiple rapid enrollment events
+        const events = [
+          "enrollment_successful",
+          "enrollment_successful",
+          "enrollment_failed",
+          "course_dropped",
+          "enrollment_successful",
+        ];
+
+        for (let i = 0; i < events.length; i++) {
+          setTimeout(() => {
+            simulateEvent(events[i]);
+          }, i * 500);
+        }
+
+        appendToOutput(
+          `🎯 Simulating high-load enrollment period with ${events.length} events`
+        );
+      }
+
+      async function runErrorHandlingScenario() {
+        appendToOutput(`🐛 Running error handling scenario...`);
+
+        // Simulate various error conditions
+        setTimeout(() => simulateEvent("system_error"), 100);
+        setTimeout(() => simulateEvent("enrollment_failed"), 600);
+        setTimeout(() => simulateEvent("system_error"), 1100);
+
+        appendToOutput(`🎯 Testing system resilience with error conditions`);
+      }
+
+      function getRandomCourseName() {
+        const courses = [
+          "Advanced Database Systems",
+          "Machine Learning",
+          "Web Development",
+          "Software Engineering",
+          "Data Structures",
+          "Computer Networks",
+          "Artificial Intelligence",
+          "Cybersecurity",
+          "Mobile App Development",
+          "Cloud Computing",
+        ];
+        return courses[Math.floor(Math.random() * courses.length)];
+      }
+
+      function getRandomFailureReason() {
+        const reasons = [
+          "Course is full",
+          "Prerequisites not met",
+          "Time conflict detected",
+          "Student already enrolled",
+          "Course not available this semester",
+          "Maximum credit limit exceeded",
+        ];
+        return reasons[Math.floor(Math.random() * reasons.length)];
+      }
+
+      function appendToOutput(message) {
+        const output = document.getElementById("notificationOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        output.textContent += `\n[${timestamp}] ${message}`;
+        output.scrollTop = output.scrollHeight;
+      }
+
+      function clearOutput() {
+        const output = document.getElementById("notificationOutput");
+        output.textContent = `Console cleared at ${new Date().toLocaleTimeString()}\n\nReady for new notifications...`;
+      }
+    </script>
+  </body>
+</html>

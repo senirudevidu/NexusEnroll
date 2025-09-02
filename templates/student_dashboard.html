@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusEnroll Student</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/design-system.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/student.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/enrollment.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/scheduleProgress.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard-overrides.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="nexus-header">
+      <div class="nexus-logo">
+        NexusEnroll <span class="nexus-portal-badge">Student Portal</span>
+      </div>
+      <button class="btn btn-secondary" onclick="window.location.href='/'">
+        Back to Main
+      </button>
+    </header>
+
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <h2 class="welcome-title">Welcome, {{ firstName }} {{ lastName }}</h2>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button onclick="showTab('catalog')" class="tab-button active">
+        Course Catalog
+      </button>
+      <button onclick="showTab('enrollment')" class="tab-button">
+        Enrollment Management
+      </button>
+      <button onclick="showTab('schedule')" class="tab-button">
+        My Schedule
+      </button>
+      <button onclick="showTab('progress')" class="tab-button">
+        Academic Progress
+      </button>
+    </nav>
+
+    <!-- Content -->
+    <main class="content">
+      <!-- Course Catalog -->
+      <section id="catalog" class="tab-content active">
+        <h3>Course Catalog</h3>
+
+        <!-- Search Filters -->
+        <div class="search-filters">
+          <div class="filter-row">
+            <input
+              type="text"
+              id="searchKeyword"
+              class="search-input"
+              placeholder="Search courses, keywords..."
+            />
+            <input
+              type="text"
+              id="searchInstructor"
+              class="search-input"
+              placeholder="Instructor name..."
+            />
+          </div>
+          <div class="filter-row">
+            <select id="departmentFilter" class="filter-select">
+              <option value="">All Departments</option>
+            </select>
+            <input
+              type="text"
+              id="courseNumber"
+              class="search-input"
+              placeholder="Course number..."
+            />
+            <button onclick="searchCourses()" class="search-btn">Search</button>
+            <button onclick="clearFilters()" class="clear-btn">Clear</button>
+          </div>
+
+          <!-- Special Use Case Section -->
+          <div class="use-case-section">
+            <h4>Find Computer Science Courses by Professor</h4>
+            <div class="use-case-filters">
+              <select id="useCaseDepartment" class="filter-select">
+                <option value="">Select Department</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Information Technology">
+                  Information Technology
+                </option>
+                <option value="Software Engineering">
+                  Software Engineering
+                </option>
+              </select>
+              <input
+                type="text"
+                id="useCaseInstructor"
+                class="search-input"
+                placeholder="Professor name..."
+              />
+              <button
+                onclick="searchByDepartmentAndInstructor()"
+                class="search-btn"
+              >
+                Find Courses
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Course Results -->
+        <div id="courseResults" class="course-results">
+          <div
+            id="loadingSpinner"
+            class="loading-spinner"
+            style="display: none"
+          >
+            <div class="spinner"></div>
+            <p>Loading courses...</p>
+          </div>
+
+          <div id="noResults" class="no-results" style="display: none">
+            <p>No courses found matching your criteria.</p>
+          </div>
+
+          <div id="courseList" class="course-list">
+            <!-- Courses will be dynamically loaded here -->
+          </div>
+        </div>
+
+        <!-- Sort Options -->
+        <div class="sort-options">
+          <label>Sort by:</label>
+          <select id="sortBy" onchange="sortCourses()">
+            <option value="courseName">Course Name</option>
+            <option value="department">Department</option>
+            <option value="instructor">Instructor</option>
+            <option value="availability">Available Seats</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Enrollment Management -->
+      <section id="enrollment" class="tab-content">
+        <div class="enrollment-container">
+          <!-- Enrollment Summary -->
+          <div class="enrollment-section">
+            <div class="section-header">
+              <h3 class="section-title">Enrollment Summary</h3>
+              <button class="refresh-btn" id="refreshEnrollments">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+            <div id="enrollmentSummary" class="enrollment-summary">
+              <!-- Summary will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Available Courses for Enrollment -->
+          <div class="enrollment-section">
+            <div class="section-header">
+              <h3 class="section-title">Available Courses</h3>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="search-filter-section">
+              <div class="filter-row">
+                <input
+                  type="text"
+                  id="courseSearchKeyword"
+                  class="search-input"
+                  placeholder="Search courses, instructors..."
+                />
+                <select id="courseSearchDepartment" class="filter-select">
+                  <option value="">All Departments</option>
+                </select>
+                <button id="searchAvailableCourses" class="search-btn">
+                  <i class="fas fa-search"></i> Search
+                </button>
+                <button
+                  onclick="enrollmentManager.loadAvailableCourses()"
+                  class="clear-btn"
+                >
+                  <i class="fas fa-times"></i> Clear
+                </button>
+              </div>
+            </div>
+
+            <div id="availableCoursesList">
+              <!-- Available courses will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Current Enrollments -->
+          <div class="enrollment-section">
+            <div class="section-header">
+              <h3 class="section-title">My Current Enrollments</h3>
+            </div>
+            <div id="enrollmentsList">
+              <!-- Current enrollments will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Schedule -->
+      <section id="schedule" class="tab-content">
+        <div class="schedule-container">
+          <div class="schedule-header">
+            <h2 class="schedule-title">My Weekly Schedule</h2>
+            <div class="schedule-controls">
+              <div class="semester-selector">
+                <label for="semesterSelect">Semester:</label>
+                <select id="semesterSelect">
+                  <option value="">Current Semester</option>
+                </select>
+              </div>
+              <div class="view-toggle">
+                <button id="calendarViewBtn" class="view-btn active">
+                  <i class="fas fa-calendar"></i> Calendar
+                </button>
+                <button id="listViewBtn" class="view-btn">
+                  <i class="fas fa-list"></i> List
+                </button>
+              </div>
+              <button id="refreshSchedule" class="refresh-btn">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- Schedule Summary -->
+          <div id="scheduleSummary">
+            <!-- Summary cards will be populated by JavaScript -->
+          </div>
+
+          <!-- Calendar View -->
+          <div id="scheduleCalendar" class="calendar-view">
+            <!-- Weekly calendar grid will be populated by JavaScript -->
+          </div>
+
+          <!-- List View -->
+          <div id="scheduleList" class="schedule-list" style="display: none">
+            <!-- Schedule list will be populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Academic Progress -->
+      <section id="progress" class="tab-content">
+        <div class="progress-container">
+          <div class="progress-header">
+            <h2 class="progress-title">Academic Progress</h2>
+            <div class="student-info">
+              Track your academic journey and degree requirements
+            </div>
+            <button id="refreshProgress" class="refresh-btn">
+              <i class="fas fa-sync-alt"></i> Refresh Progress
+            </button>
+          </div>
+
+          <!-- Progress Overview -->
+          <div id="progressOverview">
+            <!-- Progress cards and progress bar will be populated by JavaScript -->
+          </div>
+
+          <!-- Completed Courses -->
+          <div id="completedCourses">
+            <!-- Completed courses list will be populated by JavaScript -->
+          </div>
+
+          <!-- Pending Requirements -->
+          <div id="pendingRequirements">
+            <!-- Pending degree requirements will be populated by JavaScript -->
+          </div>
+
+          <!-- Grade Distribution -->
+          <div id="gradeDistribution">
+            <!-- Grade distribution chart will be populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Store student session data
+      sessionStorage.setItem("student_id", '{{ session.get("user_id", 1) }}');
+    </script>
+    <script src="{{ url_for('static', filename='js/student.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/enrollment.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scheduleProgress.js') }}"></script>
+    <script>
+      // Initialize schedule and progress when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize enrollment manager first
+        const studentId = sessionStorage.getItem("student_id");
+
+        // Initialize enrollment manager if it doesn't exist
+        if (typeof enrollmentManager === "undefined") {
+          window.enrollmentManager = new EnrollmentManager();
+          enrollmentManager.initialize(studentId);
+        }
+
+        // Initialize schedule and progress manager
+        if (typeof initializeScheduleProgress === "function") {
+          initializeScheduleProgress(studentId);
+        }
+      });
+    </script>
+  </body>
+</html>

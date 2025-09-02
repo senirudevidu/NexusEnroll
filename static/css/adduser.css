@@ -1,0 +1,107 @@
+/* Academic Light Mode Theme for Add User Form */
+
+body {
+	background: hsl(218, 26%, 97%);
+	color: hsl(217, 33%, 17%);
+	font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+	font-size: 1rem;
+	margin: 0;
+	min-height: 100vh;
+}
+
+h2 {
+	font-size: 2rem;
+	color: hsl(217, 89%, 21%);
+	margin-bottom: 1.5rem;
+	font-weight: 700;
+	letter-spacing: 1px;
+}
+
+form {
+	background: hsl(0, 0%, 100%);
+	border-radius: 1rem;
+	box-shadow: 0 4px 24px hsl(217, 89%, 31%, 0.08);
+	padding: 2rem 2.5rem;
+	margin: 2rem auto;
+	max-width: 400px;
+	border: 1px solid hsl(214, 32%, 91%);
+}
+
+label {
+	font-size: 1rem;
+	color: hsl(217, 33%, 17%);
+	margin-top: 1rem;
+	margin-bottom: 0.25rem;
+	font-weight: 500;
+}
+
+input, select {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	font-size: 1rem;
+	border: 1px solid hsl(214, 32%, 91%);
+	border-radius: 0.5rem;
+	background: hsl(216, 20%, 95%);
+	color: hsl(217, 33%, 17%);
+	margin-bottom: 0.75rem;
+	transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+	border-color: hsl(217, 89%, 21%);
+	outline: none;
+	box-shadow: 0 0 0 2px hsl(217, 89%, 31%, 0.15);
+}
+
+button {
+	width: 100%;
+	background: linear-gradient(90deg, hsl(217, 89%, 21%), hsl(217, 89%, 31%));
+	color: hsl(210, 40%, 98%);
+	font-size: 1.125rem;
+	font-weight: 600;
+	border: none;
+	border-radius: 0.5rem;
+	padding: 0.75rem 0;
+	margin-top: 1.5rem;
+	cursor: pointer;
+	box-shadow: 0 2px 8px hsl(217, 89%, 31%, 0.08);
+	transition: background 0.2s, box-shadow 0.2s;
+}
+
+button:hover, button:focus {
+	background: hsl(45, 85%, 58%);
+	color: hsl(220, 85%, 15%);
+	box-shadow: 0 4px 16px hsl(45, 85%, 58%, 0.12);
+}
+
+.hidden {
+	display: none;
+}
+
+/* Accent for important fields */
+input[type="number"], input[type="text"]:focus {
+	border-color: hsl(45, 85%, 58%);
+}
+
+select{
+    width: 100%;
+    margin-left: 1rem;
+    background-color: hsl(217, 89%, 31%, 0.1);
+    margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+	form {
+		padding: 1rem;
+	}
+	h2 {
+		font-size: 1.5rem;
+	}
+}
+
+.form-body {
+	display: flex;
+	flex-direction: column;
+    width: 95%;
+}

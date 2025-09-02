@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NexusEnroll – University Course Enrolment</title>
+    <style>
+      /* Login Modal Styles */
+      #loginModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(30, 60, 114, 0.45);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        animation: fadeInModalBg 0.5s;
+      }
+      @keyframes fadeInModalBg {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .login-modal-content {
+        background: #fff;
+        color: #222;
+        border-radius: 22px;
+        box-shadow: 0 12px 40px rgba(44, 62, 80, 0.22);
+        padding: 48px 36px 36px 36px;
+        width: 370px;
+        text-align: center;
+        position: relative;
+        animation: popUpModal 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      }
+      @keyframes popUpModal {
+        from {
+          transform: scale(0.7) translateY(40px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+      .login-modal-content h2 {
+        margin-bottom: 18px;
+        font-size: 2.1rem;
+        color: #2a5298;
+        letter-spacing: 1px;
+      }
+      .login-modal-content .user-icon {
+        font-size: 2.7rem;
+        margin-bottom: 10px;
+        animation: iconPop 1.5s infinite alternate;
+      }
+      .login-modal-content label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        text-align: left;
+      }
+      .login-modal-content input {
+        width: 100%;
+        padding: 11px;
+        margin-bottom: 18px;
+        border-radius: 9px;
+        border: 1px solid #bfc8e2;
+        font-size: 1.05rem;
+        background: #f4f7fb;
+        transition: border 0.3s;
+      }
+      .login-modal-content input:focus {
+        border: 1.5px solid #2a5298;
+        outline: none;
+      }
+      .login-modal-content button {
+        width: 100%;
+        padding: 13px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(90deg, #2a5298 60%, #1e3c72 100%);
+        color: #fff;
+        font-size: 1.08rem;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(44, 62, 80, 0.1);
+        transition: background 0.3s, transform 0.3s;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .login-modal-content button:hover {
+        background: #222;
+        transform: scale(1.05);
+      }
+      .login-modal-content .error {
+        color: #d32f2f;
+        margin-bottom: 12px;
+        font-size: 0.98rem;
+      }
+      #closeModal {
+        position: absolute;
+        top: 12px;
+        right: 18px;
+        font-size: 1.7rem;
+        cursor: pointer;
+        color: #2a5298;
+        transition: color 0.2s;
+      }
+      #closeModal:hover {
+        color: #d32f2f;
+      }
+      /* Module Selection Section */
+      .module-section {
+        background: linear-gradient(120deg, #f4f7fb 60%, #e3eafc 100%);
+        color: #222;
+        padding: 80px 10% 60px 10%;
+        min-height: 60vh;
+        position: relative;
+        z-index: 2;
+      }
+      .module-section h2 {
+        font-size: 2.3rem;
+        margin-bottom: 40px;
+        text-align: center;
+        letter-spacing: 1px;
+      }
+      .module-cards {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .module-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(44, 62, 80, 0.12);
+        width: 260px;
+        padding: 35px 25px 30px 25px;
+        text-align: center;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.4s, box-shadow 0.4s;
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+      }
+      .module-card.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        transition: opacity 0.7s, transform 0.7s;
+      }
+      .module-card:hover {
+        transform: scale(1.07) translateY(-8px);
+        box-shadow: 0 16px 40px rgba(44, 62, 80, 0.18);
+      }
+      .module-card .icon {
+        font-size: 2.8rem;
+        margin-bottom: 18px;
+        animation: iconPop 1.5s infinite alternate;
+      }
+      .module-card.admin {
+        border-top: 5px solid #2a5298;
+      }
+      .module-card.faculty {
+        border-top: 5px solid #ff9800;
+      }
+      .module-card.student {
+        border-top: 5px solid #43a047;
+      }
+      .module-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+        color: #222;
+      }
+      .module-card p {
+        font-size: 1rem;
+        margin-bottom: 18px;
+        color: #555;
+      }
+      .module-btn {
+        padding: 10px 22px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(90deg, #2a5298 60%, #1e3c72 100%);
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(44, 62, 80, 0.08);
+        transition: background 0.3s, transform 0.3s;
+      }
+      .module-card.faculty .module-btn {
+        background: linear-gradient(90deg, #ff9800 60%, #ffb74d 100%);
+        color: #fff;
+      }
+      .module-card.student .module-btn {
+        background: linear-gradient(90deg, #43a047 60%, #66bb6a 100%);
+        color: #fff;
+      }
+      .module-btn:hover {
+        transform: scale(1.08);
+        background: #222;
+      }
+      @keyframes iconPop {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.13);
+        }
+      }
+      /* Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(120deg, #1e3c72, #2a5298);
+        color: #fff;
+        overflow-x: hidden;
+      }
+      header {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+      }
+      header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        animation: fadeDown 1.2s ease-out forwards;
+      }
+      header p {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        animation: fadeUp 1.5s ease-out forwards;
+      }
+      .btn {
+        padding: 12px 30px;
+        background: #ff9800;
+        border: none;
+        border-radius: 30px;
+        font-size: 1rem;
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        animation: popUp 2s ease-in-out infinite alternate;
+      }
+      .btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Floating background animation */
+      .circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 10s infinite ease-in-out;
+      }
+      .circle.small {
+        width: 80px;
+        height: 80px;
+        left: 10%;
+        top: 20%;
+      }
+      .circle.medium {
+        width: 150px;
+        height: 150px;
+        left: 70%;
+        top: 10%;
+      }
+      .circle.large {
+        width: 250px;
+        height: 250px;
+        left: 40%;
+        top: 60%;
+      }
+
+      /* Sections */
+      section {
+        padding: 80px 10%;
+        background: #f4f7fb;
+        color: #333;
+      }
+      section h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+      }
+      section h2::after {
+        content: "";
+        width: 60px;
+        height: 4px;
+        background: #2a5298;
+        display: block;
+        margin: 10px auto;
+      }
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+      }
+      .feature-card {
+        background: #fff;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.4s;
+      }
+      .feature-card:hover {
+        transform: translateY(-10px);
+      }
+
+      footer {
+        background: #1e3c72;
+        text-align: center;
+        padding: 20px;
+        color: #fff;
+      }
+
+      /* Animations */
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes popUp {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.05);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-30px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Module Selection Section -->
+    <section id="modules" class="module-section">
+      <h2>Select Your Module</h2>
+      <div class="module-cards">
+        <div class="module-card admin" data-type="admin">
+          <div class="icon"><span>🛡️</span></div>
+          <h3>Admin</h3>
+          <p>Manage courses, users, and analytics.</p>
+          <button class="module-btn">Go to Admin</button>
+        </div>
+        <div class="module-card faculty" data-type="faculty">
+          <div class="icon"><span>🎓</span></div>
+          <h3>Faculty Staff</h3>
+          <p>View rosters, submit grades, manage courses.</p>
+          <button class="module-btn">Go to Faculty</button>
+        </div>
+        <div class="module-card student" data-type="student">
+          <div class="icon"><span>👨‍🎓</span></div>
+          <h3>Student</h3>
+          <p>Browse courses, enroll, track progress.</p>
+          <button class="module-btn">Go to Student</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal">
+      <div class="login-modal-content">
+        <span id="closeModal">&times;</span>
+        <div class="user-icon" id="modalUserIcon">🔑</div>
+        <h2 id="modalTitle">Login</h2>
+        <form id="loginForm" method="POST" action="/">
+          <input type="hidden" id="modalUserType" name="userType" />
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required />
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+          <div class="error" id="errorMsg" style="display: none"></div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <section>
+      <h2>Core Features</h2>
+      <div class="features">
+        <div class="feature-card">
+          <h3>Student Module</h3>
+          <p>
+            Browse courses, enrol, manage schedules, and track academic
+            progress.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Faculty Module</h3>
+          <p>
+            View rosters, submit grades, and manage course information requests.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Administrator Module</h3>
+          <p>
+            Control course offerings, student records, and generate enrolment
+            analytics.
+          </p>
+        </div>
+        <div class="feature-card">
+          <h3>Notifications & Reports</h3>
+          <p>
+            Automated alerts, real-time updates, and powerful reporting tools.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 NexusEnroll | Designed for UCSC Software Architecture</p>
+    </footer>
+
+    <script>
+      // Animate module cards on load
+      window.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".module-card").forEach((card, i) => {
+          setTimeout(() => {
+            card.classList.add("show");
+          }, 300 + i * 200);
+        });
+
+        // Popup login modal on module click
+        document.querySelectorAll(".module-card").forEach((card) => {
+          card.addEventListener("click", function (e) {
+            var type = card.getAttribute("data-type");
+            document.getElementById("modalUserType").value = type;
+            document.getElementById("loginModal").style.display = "flex";
+            // Set icon and title for user type
+            var icon = "🔑",
+              title = "Login";
+            if (type === "admin") {
+              icon = "🛡️";
+              title = "Admin Login";
+            } else if (type === "faculty") {
+              icon = "🎓";
+              title = "Faculty Login";
+            } else if (type === "student") {
+              icon = "👨‍🎓";
+              title = "Student Login";
+            }
+            document.getElementById("modalUserIcon").textContent = icon;
+            document.getElementById("modalTitle").textContent = title;
+          });
+        });
+
+        // Close modal
+        document.getElementById("closeModal").onclick = function () {
+          document.getElementById("loginModal").style.display = "none";
+        };
+        // Close modal on outside click
+        document.getElementById("loginModal").onclick = function (e) {
+          if (e.target === this) {
+            this.style.display = "none";
+          }
+        };
+
+        // Client-side validation
+        document
+          .getElementById("loginForm")
+          .addEventListener("submit", function (e) {
+            var username = document.getElementById("username").value.trim();
+            var password = document.getElementById("password").value;
+            var errorMsg = document.getElementById("errorMsg");
+            if (!username || !password) {
+              errorMsg.textContent = "Please fill in all fields.";
+              errorMsg.style.display = "block";
+              e.preventDefault();
+            } else {
+              errorMsg.style.display = "none";
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

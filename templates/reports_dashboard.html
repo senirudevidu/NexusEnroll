@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports & Analytics Dashboard - NexusEnroll</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/reports.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Header -->
+      <header class="dashboard-header">
+        <div class="header-content">
+          <h1>
+            <i class="fas fa-chart-line"></i> Reports & Analytics Dashboard
+          </h1>
+          <div class="user-info">
+            <span>Welcome, {{ firstName }} {{ lastName }}</span>
+            <a href="/" class="btn btn-secondary">Back to Home</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Navigation Tabs -->
+      <nav class="report-tabs">
+        <button class="tab-btn active" onclick="showTab('overview')">
+          <i class="fas fa-tachometer-alt"></i> Overview
+        </button>
+        <button class="tab-btn" onclick="showTab('enrollment')">
+          <i class="fas fa-users"></i> Enrollment Statistics
+        </button>
+        <button class="tab-btn" onclick="showTab('faculty')">
+          <i class="fas fa-chalkboard-teacher"></i> Faculty Workload
+        </button>
+        <button class="tab-btn" onclick="showTab('popularity')">
+          <i class="fas fa-star"></i> Course Popularity
+        </button>
+        <button class="tab-btn" onclick="showTab('capacity')">
+          <i class="fas fa-exclamation-triangle"></i> High Capacity
+        </button>
+        <button class="tab-btn" onclick="showTab('departments')">
+          <i class="fas fa-building"></i> Department Analytics
+        </button>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="dashboard-main">
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+          <div class="overview-grid">
+            <div class="metric-card">
+              <div class="metric-icon">
+                <i class="fas fa-graduation-cap"></i>
+              </div>
+              <div class="metric-content">
+                <h3 id="totalCourses">-</h3>
+                <p>Total Courses</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="metric-content">
+                <h3 id="totalEnrollments">-</h3>
+                <p>Total Enrollments</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">
+                <i class="fas fa-percentage"></i>
+              </div>
+              <div class="metric-content">
+                <h3 id="avgUtilization">-</h3>
+                <p>Avg Utilization</p>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">
+                <i class="fas fa-exclamation-circle"></i>
+              </div>
+              <div class="metric-content">
+                <h3 id="highCapacityCount">-</h3>
+                <p>High Capacity Courses</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Section -->
+          <div class="charts-grid">
+            <div class="chart-container">
+              <h3>Department Utilization</h3>
+              <canvas id="departmentChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h3>Course Popularity Trends</h3>
+              <canvas id="popularityChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <h3>Quick Reports</h3>
+            <div class="action-buttons">
+              <button
+                class="btn btn-primary"
+                onclick="generateBusinessReport()"
+              >
+                <i class="fas fa-briefcase"></i> Business School Report
+              </button>
+              <button
+                class="btn btn-warning"
+                onclick="generateHighCapacityReport()"
+              >
+                <i class="fas fa-exclamation-triangle"></i> High Capacity Alert
+              </button>
+              <button class="btn btn-info" onclick="generateFacultyReport()">
+                <i class="fas fa-user-tie"></i> Faculty Workload Summary
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enrollment Statistics Tab -->
+        <div id="enrollment" class="tab-content">
+          <div class="filter-section">
+            <h3>Enrollment Statistics</h3>
+            <div class="filters">
+              <select id="enrollmentDepartmentFilter">
+                <option value="">All Departments</option>
+              </select>
+              <button class="btn btn-primary" onclick="loadEnrollmentStats()">
+                <i class="fas fa-search"></i> Load Report
+              </button>
+              <button
+                class="btn btn-secondary"
+                onclick="exportReport('enrollment', 'html')"
+              >
+                <i class="fas fa-download"></i> Export HTML
+              </button>
+              <button
+                class="btn btn-secondary"
+                onclick="exportReport('enrollment', 'json')"
+              >
+                <i class="fas fa-download"></i> Export JSON
+              </button>
+            </div>
+          </div>
+          <div id="enrollmentStatsTable" class="table-container">
+            <!-- Enrollment statistics table will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Faculty Workload Tab -->
+        <div id="faculty" class="tab-content">
+          <div class="filter-section">
+            <h3>Faculty Workload Report</h3>
+            <div class="filters">
+              <button class="btn btn-primary" onclick="loadFacultyWorkload()">
+                <i class="fas fa-search"></i> Load Report
+              </button>
+              <button
+                class="btn btn-secondary"
+                onclick="exportReport('faculty', 'html')"
+              >
+                <i class="fas fa-download"></i> Export HTML
+              </button>
+              <button
+                class="btn btn-secondary"
+                onclick="exportReport('faculty', 'json')"
+              >
+                <i class="fas fa-download"></i> Export JSON
+              </button>
+            </div>
+          </div>
+          <div id="facultyWorkloadTable" class="table-container">
+            <!-- Faculty workload table will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Course Popularity Tab -->
+        <div id="popularity" class="tab-content">
+          <div class="filter-section">
+            <h3>Course Popularity Trends</h3>
+            <div class="filters">
+              <select id="popularityLimit">
+                <option value="5">Top 5</option>
+                <option value="10" selected>Top 10</option>
+                <option value="20">Top 20</option>
+              </select>
+              <button class="btn btn-primary" onclick="loadCoursePopularity()">
+                <i class="fas fa-search"></i> Load Report
+              </button>
+              <button
+                class="btn btn-secondary"
+                onclick="exportReport('popularity', 'html')"
+              >
+                <i class="fas fa-download"></i> Export HTML
+              </button>
+            </div>
+          </div>
+          <div id="coursePopularityTable" class="table-container">
+            <!-- Course popularity table will be loaded here -->
+          </div>
+        </div>
+
+        <!-- High Capacity Tab -->
+        <div id="capacity" class="tab-content">
+          <div class="filter-section">
+            <h3>High Capacity Courses</h3>
+            <div class="filters">
+              <select id="capacityDepartmentFilter">
+                <option value="">All Departments</option>
+                <option value="Business">Business</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Engineering">Engineering</option>
+              </select>
+              <select id="capacityThreshold">
+                <option value="80">80% Capacity</option>
+                <option value="90" selected>90% Capacity</option>
+                <option value="95">95% Capacity</option>
+              </select>
+              <button
+                class="btn btn-primary"
+                onclick="loadHighCapacityCourses()"
+              >
+                <i class="fas fa-search"></i> Load Report
+              </button>
+              <button
+                class="btn btn-warning"
+                onclick="loadBusinessSchoolReport()"
+              >
+                <i class="fas fa-briefcase"></i> Business School Focus
+              </button>
+            </div>
+          </div>
+          <div id="highCapacityTable" class="table-container">
+            <!-- High capacity courses table will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Department Analytics Tab -->
+        <div id="departments" class="tab-content">
+          <div class="filter-section">
+            <h3>Department Analytics</h3>
+            <div class="filters">
+              <button
+                class="btn btn-primary"
+                onclick="loadDepartmentAnalytics()"
+              >
+                <i class="fas fa-search"></i> Load Report
+              </button>
+              <button
+                class="btn btn-secondary"
+                onclick="exportReport('departments', 'html')"
+              >
+                <i class="fas fa-download"></i> Export HTML
+              </button>
+            </div>
+          </div>
+          <div id="departmentAnalyticsTable" class="table-container">
+            <!-- Department analytics table will be loaded here -->
+          </div>
+        </div>
+      </main>
+
+      <!-- Loading Spinner -->
+      <div id="loadingSpinner" class="loading-spinner" style="display: none">
+        <div class="spinner"></div>
+        <p>Loading report data...</p>
+      </div>
+
+      <!-- Export Modal -->
+      <div id="exportModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <h3>Export Report</h3>
+          <p>Your report is being prepared for download...</p>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeExportModal()">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/reports.js') }}"></script>
+  </body>
+</html>
