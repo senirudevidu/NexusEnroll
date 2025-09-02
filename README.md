@@ -179,6 +179,32 @@ The system supports multiple user roles, each with their own dashboard:
 - **Add Departments:** `/add_department` - Administrative function to add new departments
 - **Add Degrees:** `/add_degree` - Administrative function to add new degree programs
 
+## Testing Credentials
+
+For testing purposes, the following accounts have been pre-configured in the system:
+
+### Login Information
+
+- **Username:** Email address used during registration
+- **Password:** Mobile number provided during registration
+
+### Test Accounts
+
+| Role    | Username (Email)  | Password   |
+| ------- | ----------------- | ---------- |
+| Admin   | seniru@gmail.com  | 0712345678 |
+| Faculty | minoli@gmail.com  | 0712345678 |
+| Student | ramsith@gmail.com | 0712345678 |
+
+### How to Login
+
+1. Navigate to the login page: http://localhost:5000/login
+2. Enter the email address as username
+3. Enter the mobile number as password
+4. Click login to access the respective dashboard
+
+**Note:** These are test credentials for demonstration purposes only. In a production environment, ensure proper password security and user management practices.
+
 ## Project Structure
 
 ```
@@ -205,6 +231,81 @@ NexusEnroll/
 └── env/                # Virtual environment (if using)
 ```
 
+## Architecture
+
+NexusEnroll follows a **3-Tier Layered Architecture** pattern that promotes separation of concerns and maintainability:
+
+### 1. Presentation Layer (`backend/presentation/`)
+
+- **Routes (`routes.py`)**: Handles HTTP requests, routing, and response formatting
+- **Reports (`reports.py`)**: Manages report generation and presentation logic
+- Responsible for user interface interaction and request/response handling
+
+### 2. Business Logic Layer (`backend/service/`)
+
+- Contains all business rules and application logic
+- Services include: `userService.py`, `courseService.py`, `enrollmentService.py`, etc.
+- Acts as an intermediary between presentation and data access layers
+
+### 3. Data Access Layer (`backend/dal/`)
+
+- **Database Configuration (`dbconfig.py`)**: Manages database connections
+- **Data Models**: `user.py`, `course.py`, `enrollment.py`, etc.
+- Handles all database operations and data persistence
+
+## Design Patterns Implementation
+
+The system implements several software design patterns to ensure code reusability, maintainability, and extensibility:
+
+### 1. **Abstract Factory Pattern**
+
+- **Location**: `backend/dal/user.py` (Lines 402-418)
+- **Implementation**:
+  - Abstract `UserFactory` class
+  - Concrete factories: `StudentFactory`, `FacultyMemberFactory`, `AdminFactory`
+- **Purpose**: Creates different types of user objects without specifying exact classes
+- **Usage**: Used in service layer to create appropriate user instances
+
+### 2. **Template Method Pattern**
+
+- **Location**: `backend/presentation/reports.py` (Lines 1-21)
+- **Implementation**:
+  - Abstract `GenerateReport` class with template methods
+  - Concrete implementations: `EnrollmentStatisticsReport`, `FacultyWorkloadReport`
+- **Purpose**: Defines skeleton of report generation algorithm
+- **Template Methods**: `getData()`, `processData()`, `outputData()`
+
+### 3. **Observer Pattern**
+
+- **Location**: `backend/service/notificationService.py` (Lines 8-100)
+- **Implementation**:
+  - `NotificationObserver` interface (Abstract Observer)
+  - `NotificationSubject` interface (Abstract Subject)
+  - `EnrollmentNotificationSubject` (Concrete Subject)
+  - Various concrete observers: `StudentObserver`, `FacultyObserver`, etc.
+- **Purpose**: Implements notification system for enrollment events
+- **Demo**: Available at `/notification_demo` route
+
+### 4. **Repository Pattern**
+
+- **Location**: Throughout `backend/dal/` directory
+- **Implementation**:
+  - Data access objects encapsulate database operations
+  - Each entity has its own repository (e.g., `user.py`, `course.py`, `enrollment.py`)
+- **Purpose**: Abstracts data access logic and provides centralized data access
+
+### 5. **Service Layer Pattern**
+
+- **Location**: `backend/service/` directory
+- **Implementation**: All business logic is encapsulated in service classes
+- **Purpose**: Separates business logic from presentation and data access layers
+
+### 6. **Strategy Pattern**
+
+- **Location**: `backend/presentation/reports.py`
+- **Implementation**: Different report generation strategies
+- **Purpose**: Allows switching between different report generation algorithms at runtime
+
 ## Features
 
 - **Multi-role Authentication**: Support for students, faculty, and administrators
@@ -214,6 +315,7 @@ NexusEnroll/
 - **Reporting System**: Comprehensive reports for various stakeholders
 - **Responsive Design**: Mobile-friendly interface
 - **Real-time Updates**: Dynamic content updates
+- **Design Pattern Demonstration**: Observer pattern demo available at `/notification_demo`
 
 ## Troubleshooting
 
