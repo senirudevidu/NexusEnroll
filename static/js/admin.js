@@ -1,15 +1,17 @@
 function showTab(tabId) {
+  console.log("showTab called with:", tabId); // Debug log
+
   document
     .querySelectorAll(".tab-content")
     .forEach((sec) => sec.classList.remove("active"));
   document.getElementById(tabId).classList.add("active");
 
   document
-    .querySelectorAll(".tabs button")
+    .querySelectorAll(".tabs button, .tabs .tab-button")
     .forEach((btn) => btn.classList.remove("active"));
 
   // Handle cases where there's no event (e.g., during initialization)
-  if (event && event.target) {
+  if (typeof event !== "undefined" && event && event.target) {
     event.target.classList.add("active");
   } else {
     // Find and activate the button for this tab
@@ -20,6 +22,8 @@ function showTab(tabId) {
       targetButton.classList.add("active");
     }
   }
+
+  console.log("Active tab set to:", tabId); // Debug log
 
   if (tabId === "course-management") {
     loadCourses();
@@ -1166,6 +1170,18 @@ async function rejectRequest(requestId) {
 
 // Initialize the page when DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
+  // Ensure all tabs are hidden first
+  document.querySelectorAll(".tab-content").forEach((tab) => {
+    tab.classList.remove("active");
+  });
+
+  // Ensure all tab buttons are inactive first
+  document
+    .querySelectorAll(".tabs button, .tabs .tab-button")
+    .forEach((btn) => {
+      btn.classList.remove("active");
+    });
+
   // Load the course management tab by default (matches the HTML default active tab)
   showTab("course-management");
 });

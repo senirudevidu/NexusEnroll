@@ -4,9 +4,15 @@ class AjaxHelper {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => onSuccess(data))
       .catch((error) => {
+        console.error("AjaxHelper GET error:", error);
         if (onError) onError(error);
       });
   }
@@ -17,9 +23,15 @@ class AjaxHelper {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => onSuccess(data))
       .catch((error) => {
+        console.error("AjaxHelper POST error:", error);
         if (onError) onError(error);
       });
   }

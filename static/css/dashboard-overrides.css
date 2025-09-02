@@ -128,14 +128,18 @@
 
 /* Global content area styling */
 .content,
-.tab-content {
+.main-content {
   padding: var(--space-3xl) !important;
   max-width: var(--max-width-container) !important;
   margin: 0 auto !important;
 }
 
+/* Tab content visibility - DO NOT override display with !important */
 .tab-content {
-  display: block !important;
+  padding: var(--space-xl) !important;
+  max-width: var(--max-width-container) !important;
+  margin: 0 auto !important;
+  /* display: none is handled by design-system.css and admin.css */
 }
 
 .tab-content.active {

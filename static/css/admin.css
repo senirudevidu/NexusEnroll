@@ -10,7 +10,8 @@ body {
 }
 
 /* Keep some legacy class names for backward compatibility */
-.admin-header {
+.admin-header,
+.nexus-header {
   background: linear-gradient(
     90deg,
     var(--primary-navy) 60%,
@@ -64,7 +65,8 @@ body {
   color: var(--text-light);
 }
 
-.welcome {
+.welcome,
+.welcome-section {
   padding: var(--space-3xl) var(--space-3xl) var(--space-lg);
   background: rgba(255, 255, 255, 0.7);
   border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
@@ -72,7 +74,8 @@ body {
   margin-bottom: var(--space-md);
 }
 
-.welcome h2 {
+.welcome h2,
+.welcome-title {
   font-size: var(--text-3xl);
   color: var(--primary-navy);
   margin-bottom: var(--space-sm);
@@ -93,7 +96,8 @@ body {
   gap: var(--space-sm);
 }
 
-.tabs button {
+.tabs button,
+.tabs .tab-button {
   background: none;
   border: none;
   padding: var(--space-md) var(--space-2xl);
@@ -106,12 +110,14 @@ body {
   font-family: var(--font-family-primary);
 }
 
-.tabs button:hover {
+.tabs button:hover,
+.tabs .tab-button:hover {
   background: var(--primary-light-blue);
   color: var(--primary-blue);
 }
 
-.tabs button.active {
+.tabs button.active,
+.tabs .tab-button.active {
   background: var(--bg-secondary);
   border-bottom: 3px solid var(--primary-navy);
   font-weight: var(--font-semibold);
@@ -232,12 +238,22 @@ tbody tr:hover {
   font-weight: var(--font-semibold);
 }
 
-.tab-content {
-  display: none;
+/* Tab Content Visibility - High specificity to ensure proper tab switching */
+.content .tab-content,
+section.tab-content,
+main .tab-content {
+  display: none !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
 }
 
-.tab-content.active {
-  display: block;
+.content .tab-content.active,
+section.tab-content.active,
+main .tab-content.active {
+  display: block !important;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Status Buttons */
