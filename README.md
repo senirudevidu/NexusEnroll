@@ -369,3 +369,28 @@ For production deployment, disable debug mode in `app.py`:
 ```python
 app.run(debug=False)
 ```
+
+
+## UI
+### Landing
+<img width="1916" height="1199" alt="image" src="https://github.com/user-attachments/assets/412125e4-b77c-4e5c-83a7-7d416f06b13f" />
+
+### Login
+<img width="1911" height="1190" alt="image" src="https://github.com/user-attachments/assets/762b9078-d816-4b5f-ab54-97e2689fbf2f" />
+
+### Admin
+<img width="1889" height="1183" alt="image" src="https://github.com/user-attachments/assets/95f57254-fa22-4b06-8c58-dfd3f7643963" /><img width="1893" height="1187" alt="image" src="https://github.com/user-attachments/assets/b8bf1d13-6ca8-4290-8cc1-f9c240c3b7fb" /><img width="1915" height="1194" alt="image" src="https://github.com/user-attachments/assets/f9cec7b4-2071-4add-968f-bb9b888c030a" />
+
+### Faculty
+<img width="1916" height="984" alt="image" src="https://github.com/user-attachments/assets/1db5c005-c8ab-400e-aa75-dd8d8875cb8d" /><img width="1904" height="1177" alt="image" src="https://github.com/user-attachments/assets/50b8316b-1d4a-4668-8e7b-e0b91fd2160b" /><img width="1918" height="1195" alt="image" src="https://github.com/user-attachments/assets/019a49d9-69d3-4bf4-a417-e0f4bdd2c132" /><img width="1919" height="1196" alt="image" src="https://github.com/user-attachments/assets/cfe0884e-7355-48ea-ac00-28b1519eeb30" />
+
+### Student
+<img width="1915" height="1198" alt="image" src="https://github.com/user-attachments/assets/a1fb6744-fe1d-44fb-9212-e66f65e148ef" /><img width="1916" height="1181" alt="image" src="https://github.com/user-attachments/assets/b0965411-b979-4a75-a421-2c89499586a4" /><img width="1919" height="1171" alt="image" src="https://github.com/user-attachments/assets/88df1d31-2ac1-4a93-a26e-29c93edf0e42" />
+
+
+
+
+
+
+
+
