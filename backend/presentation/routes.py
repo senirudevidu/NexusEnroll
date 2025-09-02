@@ -57,6 +57,13 @@ def faculty_dashboard():
     first_name = session.get('firstName', 'Dr. Sarah')
     last_name = session.get('lastName', 'Johnson')
     faculty_id = session.get('user_id', 1)  # Get faculty ID from session, default to 1 for demo
+    
+    # Ensure faculty_id is an integer
+    try:
+        faculty_id = int(faculty_id)
+    except (ValueError, TypeError):
+        faculty_id = 1
+    
     return render_template('faculty_dashboard.html', firstName=first_name, lastName=last_name, facultyId=faculty_id)
 
 @bp.route('/roster-test')

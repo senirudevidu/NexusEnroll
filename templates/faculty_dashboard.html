@@ -205,10 +205,28 @@
       </div>
     </div>
 
-    <script>
-      // Set faculty ID from backend session data
-      window.FACULTY_ID = {{ facultyId }};
+    <!-- Faculty ID Data (Hidden) -->
+    <div
+      id="faculty-data"
+      data-faculty-id="{{ facultyId if facultyId else 1 }}"
+      style="display: none"
+    ></div>
+
+    <!-- JavaScript -->
+    <script type="text/javascript">
+      // Get faculty ID from data attribute (avoids template syntax in JS)
+      (function () {
+        var dataElement = document.getElementById("faculty-data");
+        var facultyId =
+          parseInt(dataElement.getAttribute("data-faculty-id")) || 1;
+
+        // Set global variable
+        window.FACULTY_ID = facultyId;
+
+        console.log("Faculty ID initialized:", window.FACULTY_ID);
+      })();
     </script>
+
     <script src="{{url_for('static', filename='js/faculty.js')}}"></script>
   </body>
 </html>
