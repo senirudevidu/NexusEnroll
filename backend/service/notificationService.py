@@ -1,12 +1,3 @@
-"""
-Notification System Implementation using Observer Design Pattern
-Author: NexusEnroll System
-Date: September 2, 2025
-
-This module implements a notification system that observes enrollment events
-and notifies relevant stakeholders (students, advisors, administrators).
-"""
-
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Dict, Any

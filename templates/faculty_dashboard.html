@@ -6,19 +6,26 @@
     <title>NexusEnroll - Faculty Dashboard</title>
     <link
       rel="stylesheet"
+      href="{{url_for('static', filename='css/design-system.css')}}"
+    />
+    <link
+      rel="stylesheet"
       href="{{url_for('static', filename='css/faculty.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename='css/dashboard-overrides.css')}}"
     />
   </head>
   <body>
     <div class="dashboard-container">
       <!-- Blue Header Bar -->
-      <header class="top-header">
-        <div class="header-left">
-          <h1 class="logo">NexusEnroll</h1>
-          <span class="portal">Faculty Portal</span>
+      <header class="nexus-header">
+        <div class="nexus-logo">
+          NexusEnroll <span class="nexus-portal-badge">Faculty Portal</span>
         </div>
         <div class="header-right">
-          <button class="back-btn" onclick="window.location.href='/'">
+          <button class="btn btn-secondary" onclick="window.location.href='/'">
             Back to Main
           </button>
         </div>
@@ -26,7 +33,7 @@
 
       <!-- Welcome Section (Outside blue box) -->
       <div class="welcome-section">
-        <h2>Welcome, {{firstName}} {{lastName}}</h2>
+        <h2 class="welcome-title">Welcome, {{firstName}} {{lastName}}</h2>
       </div>
 
       <!-- Navigation Tabs -->

@@ -6,6 +6,10 @@
     <title>NexusEnroll Student</title>
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/design-system.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="{{ url_for('static', filename='css/student.css') }}"
     />
     <link
@@ -18,33 +22,43 @@
     />
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard-overrides.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
   </head>
   <body>
     <!-- Header -->
-    <header class="student-header">
-      <div class="logo">
-        NexusEnroll <span class="portal">Student Portal</span>
+    <header class="nexus-header">
+      <div class="nexus-logo">
+        NexusEnroll <span class="nexus-portal-badge">Student Portal</span>
       </div>
-      <button class="back-btn" onclick="window.location.href='/'">
+      <button class="btn btn-secondary" onclick="window.location.href='/'">
         Back to Main
       </button>
     </header>
 
     <!-- Welcome Section -->
-    <div class="welcome">
-      <h2>Welcome, {{ firstName }} {{ lastName }}</h2>
+    <div class="welcome-section">
+      <h2 class="welcome-title">Welcome, {{ firstName }} {{ lastName }}</h2>
     </div>
 
     <!-- Tabs -->
     <nav class="tabs">
-      <button onclick="showTab('catalog')" class="active">
+      <button onclick="showTab('catalog')" class="tab-button active">
         Course Catalog
       </button>
-      <button onclick="showTab('enrollment')">Enrollment Management</button>
-      <button onclick="showTab('schedule')">My Schedule</button>
-      <button onclick="showTab('progress')">Academic Progress</button>
+      <button onclick="showTab('enrollment')" class="tab-button">
+        Enrollment Management
+      </button>
+      <button onclick="showTab('schedule')" class="tab-button">
+        My Schedule
+      </button>
+      <button onclick="showTab('progress')" class="tab-button">
+        Academic Progress
+      </button>
     </nav>
 
     <!-- Content -->

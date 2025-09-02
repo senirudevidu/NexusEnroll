@@ -1,29 +1,21 @@
-/* style.css - Faculty Dashboard with Full Screen Layout */
+/* Faculty Dashboard Specific Styles */
+/* This file extends the design-system.css with faculty-specific components */
+
+/* Using design system variables instead of custom variables */
 :root {
-  /* Light Mode Colors (HSL) */
-  --background: hsl(218, 26%, 97%);
-  --foreground: hsl(217, 33%, 17%);
-  --card: hsl(0, 0%, 100%);
-  --primary: hsl(217, 89%, 21%);
-  --primary-foreground: hsl(210, 40%, 98%);
-  --secondary: hsl(216, 20%, 95%);
-  --accent: hsl(45, 85%, 58%);
-  --border: hsl(214, 32%, 91%);
-
-  /* Academic Theme Colors */
-  --academic-blue: hsl(217, 89%, 21%);
-  --academic-gold: hsl(45, 85%, 58%);
-  --academic-navy: hsl(220, 85%, 15%);
-  --primary-glow: hsl(217, 89%, 31%);
-
-  /* Font Sizes */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
+  /* Override any remaining custom variables to use design system */
+  --background: var(--bg-primary);
+  --foreground: var(--text-primary);
+  --card: var(--bg-card);
+  --primary: var(--primary-navy);
+  --primary-foreground: var(--text-light);
+  --secondary: var(--secondary-light-gray);
+  --accent: var(--primary-accent);
+  --border: var(--secondary-border);
+  --academic-blue: var(--primary-navy);
+  --academic-gold: var(--primary-accent);
+  --academic-navy: var(--primary-navy);
+  --primary-glow: var(--primary-blue);
 }
 
 * {
@@ -33,9 +25,9 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
+  font-family: var(--font-family-primary);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
   height: 100vh;
   display: flex;
@@ -46,38 +38,44 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--card);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Blue Header Bar */
+/* Legacy header styles for backward compatibility */
 .top-header {
-  background: #0d2d66; /* deep blue */
-  color: #fff;
+  background: linear-gradient(
+    90deg,
+    var(--primary-navy) 60%,
+    var(--primary-blue) 100%
+  );
+  color: var(--text-light);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: var(--space-md) var(--space-xl);
+  box-shadow: var(--shadow-brand);
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: var(--space-lg);
 }
 
 .logo {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
 }
 
 .portal {
-  background: orange;
-  color: #000;
-  font-size: 12px;
-  padding: 2px 6px;
-  margin-left: 5px;
-  border-radius: 4px;
+  background: var(--primary-accent);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  padding: var(--space-xs) var(--space-sm);
+  margin-left: var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-medium);
 }
 
 .header-right {
@@ -86,18 +84,35 @@ body {
 }
 
 .back-btn {
-  background: #fff;
+  background: var(--bg-secondary);
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  font-family: var(--font-family-primary);
+  transition: all var(--transition-fast);
+  color: var(--primary-navy);
 }
 
 .back-btn:hover {
-  background: #e1e1e1;
+  background: var(--secondary-border);
 }
 
-/* Welcome Section (Outside blue box) */
+/* Welcome Section */
+.welcome-section {
+  padding: var(--space-3xl) var(--space-3xl) var(--space-xl);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.welcome-section h2 {
+  font-size: var(--text-3xl);
+  color: var(--primary-navy);
+  margin: 0;
+  font-weight: var(--font-semibold);
+}
 .welcome-section {
   padding: 20px 30px;
   background: var(--card);

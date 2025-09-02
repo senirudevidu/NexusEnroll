@@ -1,0 +1,293 @@
+/* Dashboard Overrides - Ensures consistent styling across all dashboards */
+
+/* Global overrides for consistent header styling */
+.admin-header,
+.student-header,
+.top-header {
+  background: linear-gradient(
+    90deg,
+    var(--primary-navy) 60%,
+    var(--primary-blue) 100%
+  ) !important;
+  color: var(--text-light) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: var(--space-xl) var(--space-3xl) !important;
+  box-shadow: var(--shadow-brand) !important;
+  min-height: var(--header-height) !important;
+}
+
+/* Global logo styling */
+.logo,
+.nexus-logo {
+  font-size: var(--text-2xl) !important;
+  font-weight: var(--font-bold) !important;
+  letter-spacing: 1px !important;
+  color: var(--text-light) !important;
+}
+
+/* Global portal badge styling */
+.portal,
+.nexus-portal-badge {
+  background: linear-gradient(
+    90deg,
+    var(--primary-accent) 0%,
+    var(--primary-accent-light) 100%
+  ) !important;
+  color: var(--text-primary) !important;
+  font-size: var(--text-sm) !important;
+  padding: var(--space-xs) var(--space-md) !important;
+  margin-left: var(--space-sm) !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: var(--font-semibold) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Global back button styling */
+.back-btn,
+.btn-secondary {
+  background: var(--bg-secondary) !important;
+  border: none !important;
+  padding: var(--space-sm) var(--space-xl) !important;
+  border-radius: var(--radius-md) !important;
+  cursor: pointer !important;
+  font-weight: var(--font-semibold) !important;
+  color: var(--primary-navy) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all var(--transition-fast) !important;
+  font-family: var(--font-family-primary) !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.back-btn:hover,
+.btn-secondary:hover {
+  background: var(--primary-navy) !important;
+  color: var(--text-light) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Global welcome section styling */
+.welcome,
+.welcome-section {
+  padding: var(--space-3xl) var(--space-3xl) var(--space-xl) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl) !important;
+  box-shadow: var(--shadow-sm) !important;
+  margin-bottom: var(--space-xl) !important;
+}
+
+.welcome h2,
+.welcome-title {
+  font-size: var(--text-3xl) !important;
+  color: var(--primary-navy) !important;
+  margin: 0 0 var(--space-sm) 0 !important;
+  font-weight: var(--font-semibold) !important;
+}
+
+/* Global tab styling */
+.tabs {
+  display: flex !important;
+  background: var(--secondary-light-gray) !important;
+  padding: var(--space-md) var(--space-xl) !important;
+  border-bottom: 1px solid var(--secondary-border) !important;
+  gap: var(--space-sm) !important;
+  flex-wrap: wrap !important;
+}
+
+.tabs button,
+.tab-button {
+  background: none !important;
+  border: none !important;
+  padding: var(--space-md) var(--space-2xl) !important;
+  cursor: pointer !important;
+  font-size: var(--text-base) !important;
+  color: var(--primary-navy) !important;
+  font-weight: var(--font-medium) !important;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  transition: all var(--transition-fast) !important;
+  font-family: var(--font-family-primary) !important;
+}
+
+.tabs button:hover,
+.tab-button:hover {
+  background: var(--primary-light-blue) !important;
+  color: var(--primary-blue) !important;
+}
+
+.tabs button.active,
+.tab-button.active {
+  background: var(--bg-secondary) !important;
+  border-bottom: 3px solid var(--primary-navy) !important;
+  font-weight: var(--font-semibold) !important;
+  color: var(--primary-blue) !important;
+}
+
+/* Global content area styling */
+.content,
+.tab-content {
+  padding: var(--space-3xl) !important;
+  max-width: var(--max-width-container) !important;
+  margin: 0 auto !important;
+}
+
+.tab-content {
+  display: none !important;
+}
+
+.tab-content.active {
+  display: block !important;
+}
+
+/* Global button styling consistency */
+.add-btn,
+.btn-accent {
+  background: linear-gradient(
+    90deg,
+    var(--primary-accent) 0%,
+    var(--primary-accent-light) 100%
+  ) !important;
+  border: none !important;
+  padding: var(--space-sm) var(--space-xl) !important;
+  border-radius: var(--radius-lg) !important;
+  cursor: pointer !important;
+  font-weight: var(--font-semibold) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: all var(--transition-fast) !important;
+  font-family: var(--font-family-primary) !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--space-sm) !important;
+}
+
+.add-btn:hover,
+.btn-accent:hover {
+  background: linear-gradient(
+    90deg,
+    var(--primary-accent-dark) 0%,
+    var(--primary-accent) 100%
+  ) !important;
+  color: var(--text-light) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Global table styling */
+table,
+.table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: var(--bg-card) !important;
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+table th,
+table td,
+.table th,
+.table td {
+  padding: var(--space-lg) !important;
+  text-align: left !important;
+  border-bottom: 1px solid var(--secondary-border) !important;
+  font-size: var(--text-base) !important;
+}
+
+table th,
+.table th {
+  background: linear-gradient(
+    90deg,
+    var(--primary-light-blue) 0%,
+    #f1f1f1 100%
+  ) !important;
+  color: var(--primary-navy) !important;
+  font-weight: var(--font-semibold) !important;
+  font-size: var(--text-sm) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+table tbody tr:hover,
+.table tbody tr:hover {
+  background: var(--primary-light-blue) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-header,
+  .student-header,
+  .top-header,
+  .nexus-header {
+    padding: var(--space-lg) var(--space-xl) !important;
+    flex-direction: column !important;
+    gap: var(--space-md) !important;
+    min-height: auto !important;
+  }
+
+  .tabs {
+    flex-direction: column !important;
+    gap: var(--space-xs) !important;
+  }
+
+  .tab-button,
+  .tabs button {
+    padding: var(--space-sm) var(--space-lg) !important;
+    font-size: var(--text-sm) !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .content,
+  .tab-content {
+    padding: var(--space-xl) !important;
+  }
+}
+
+/* Focus states for accessibility */
+.back-btn:focus,
+.btn-secondary:focus,
+.add-btn:focus,
+.btn-accent:focus,
+.tab-button:focus,
+.tabs button:focus {
+  outline: 2px solid var(--primary-blue) !important;
+  outline-offset: 2px !important;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6 !important;
+  pointer-events: none !important;
+}
+
+/* Status badges */
+.status-badge {
+  padding: var(--space-xs) var(--space-sm) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: var(--text-sm) !important;
+  font-weight: var(--font-medium) !important;
+}
+
+.status-active {
+  background: var(--success-light) !important;
+  color: var(--success-color) !important;
+}
+
+.status-inactive {
+  background: var(--secondary-border) !important;
+  color: var(--secondary-gray) !important;
+}
+
+.status-warning {
+  background: var(--warning-light) !important;
+  color: var(--warning-color) !important;
+}
+
+.status-danger {
+  background: var(--danger-light) !important;
+  color: var(--danger-color) !important;
+}

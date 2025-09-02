@@ -7,34 +7,47 @@
     <title>NexusEnroll Admin</title>
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/design-system.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="{{ url_for('static', filename='css/admin.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard-overrides.css') }}"
     />
   </head>
   <body>
     <!-- Header -->
-    <header class="admin-header">
-      <div class="logo">
-        NexusEnroll <span class="portal">Administrator Portal</span>
+    <header class="nexus-header">
+      <div class="nexus-logo">
+        NexusEnroll <span class="nexus-portal-badge">Administrator Portal</span>
       </div>
-      <button class="back-btn" onclick="window.location.href='/'">
+      <button class="btn btn-secondary" onclick="window.location.href='/'">
         Back to Main
       </button>
     </header>
 
     <!-- Welcome Section -->
-    <div class="welcome">
-      <h2>Welcome, {{firstName}} {{lastName}}</h2>
+    <div class="welcome-section">
+      <h2 class="welcome-title">Welcome, {{firstName}} {{lastName}}</h2>
     </div>
 
     <!-- Tabs -->
     <nav class="tabs">
-      <button onclick="showTab('course-management')" class="active">
+      <button onclick="showTab('course-management')" class="tab-button active">
         Course Management
       </button>
-      <button onclick="showTab('course-requests')">Course Requests</button>
-      <button onclick="showTab('user-management')">User Management</button>
-      <button onclick="showTab('reports')">Reports & Analytics</button>
-      <button onclick="showTab('settings')">System Settings</button>
+      <button onclick="showTab('course-requests')" class="tab-button">
+        Course Requests
+      </button>
+      <button onclick="showTab('user-management')" class="tab-button">
+        User Management
+      </button>
+      <button onclick="showTab('reports')" class="tab-button">
+        Reports & Analytics
+      </button>
     </nav>
 
     <!-- Content -->
@@ -44,14 +57,20 @@
         <div class="section-header">
           <h3>Course Management</h3>
           <div class="button-group">
-            <button class="add-btn" onclick="window.location.href='/course'">
+            <button
+              class="btn btn-accent"
+              onclick="window.location.href='/course'"
+            >
               + Add Course
             </button>
-            <button class="add-btn" onclick="window.location.href='/degrees'">
+            <button
+              class="btn btn-accent"
+              onclick="window.location.href='/degrees'"
+            >
               + Add Degree
             </button>
             <button
-              class="add-btn"
+              class="btn btn-accent"
               onclick="window.location.href='/departments'"
             >
               + Add Department
@@ -59,7 +78,7 @@
           </div>
         </div>
 
-        <table>
+        <table class="table">
           <thead>
             <tr>
               <th>Course Name</th>
@@ -126,11 +145,14 @@
       <section id="user-management" class="tab-content">
         <div class="section-header">
           <h3>User Management</h3>
-          <button class="add-btn" onclick="window.location.href='/addUserForm'">
+          <button
+            class="btn btn-accent"
+            onclick="window.location.href='/addUserForm'"
+          >
             + Add User
           </button>
         </div>
-        <table>
+        <table class="table">
           <thead>
             <tr>
               <th>User ID</th>
@@ -585,32 +607,6 @@
         </div>
         <div id="faculty-error" class="error" style="display: none">
           No faculty workload report data available.
-        </div>
-      </section>
-
-      <!-- Settings -->
-      <section id="settings" class="tab-content">
-        <h3>System Settings</h3>
-        <div class="settings-card">
-          <h4>Enrollment Settings</h4>
-          <div class="setting-item">
-            <span>Auto-enroll from waitlist</span>
-            <button class="add-btn">Configure</button>
-          </div>
-          <div class="setting-item">
-            <span>Registration periods</span>
-            <button class="add-btn">Manage</button>
-          </div>
-
-          <h4>Notification Settings</h4>
-          <div class="setting-item">
-            <span>Email notifications</span>
-            <button class="add-btn">Configure</button>
-          </div>
-          <div class="setting-item">
-            <span>System alerts</span>
-            <button class="add-btn">Manage</button>
-          </div>
         </div>
       </section>
     </main>

@@ -1,8 +1,3 @@
-"""
-Data Access Layer for Course Request Management
-Handles database operations for course change requests
-"""
-
 class CourseRequest:
     def __init__(self, db):
         self.db = db
